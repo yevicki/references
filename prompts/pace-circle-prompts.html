@@ -1,0 +1,1297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PaceCircle — Prompt Library</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #080b08; --surface: #0d110d; --card: #131813; --border: #1c241c;
+    --text: #eef2ee; --muted: #566056;
+    --green: #00e5a0; --green-dim: rgba(0,229,160,0.09);
+    --blue: #4d9fff; --blue-dim: rgba(77,159,255,0.09);
+    --amber: #ffb830; --amber-dim: rgba(255,184,48,0.09);
+    --red: #ff5c5c; --red-dim: rgba(255,92,92,0.08);
+    --purple: #b388ff; --purple-dim: rgba(179,136,255,0.08);
+    --teal: #26d4d4; --teal-dim: rgba(38,212,212,0.09);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text);
+    min-height: 100vh; padding: 40px 20px 100px;
+    background-image: linear-gradient(rgba(0,229,160,0.013) 1px, transparent 1px), linear-gradient(90deg, rgba(0,229,160,0.013) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
+  .header { max-width: 900px; margin: 0 auto 52px; }
+  .eyebrow { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.22em; color: var(--green); text-transform: uppercase; margin-bottom: 12px; display: flex; align-items: center; gap: 12px; }
+  .eyebrow::after { content:''; flex: 0 0 40px; height: 1px; background: var(--green); opacity: 0.35; }
+  h1 { font-family: 'Bebas Neue', sans-serif; font-size: clamp(52px, 9vw, 88px); line-height: 0.9; color: var(--text); }
+  h1 span { color: var(--green); }
+  .header-desc { font-size: 13px; color: var(--muted); max-width: 600px; line-height: 1.7; margin-top: 16px; }
+  .header-desc strong { color: var(--text); }
+
+  .how-to { max-width: 900px; margin: 0 auto 48px; background: var(--card); border: 1px solid rgba(0,229,160,0.2); border-left: 3px solid var(--green); border-radius: 0 10px 10px 0; padding: 18px 22px; }
+  .how-to-label { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--green); margin-bottom: 10px; }
+  .how-to-step { font-size: 12.5px; color: #ccc; line-height: 1.6; padding-left: 18px; position: relative; margin-bottom: 5px; }
+  .how-to-step::before { content: attr(data-n); position: absolute; left: 0; color: var(--green); font-family: 'DM Mono', monospace; font-size: 10px; top: 3px; font-weight: 700; }
+
+  .section-label { max-width: 900px; margin: 0 auto 18px; display: flex; align-items: center; gap: 12px; }
+  .section-label h2 { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 0.06em; white-space: nowrap; }
+  .section-label .line { flex: 1; height: 1px; background: var(--border); }
+  .section-num { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); letter-spacing: 0.12em; }
+
+  .prompts-wrap { max-width: 900px; margin: 0 auto 48px; display: flex; flex-direction: column; gap: 10px; }
+
+  .prompt-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+  .prompt-header { display: flex; align-items: center; gap: 12px; padding: 14px 18px; cursor: pointer; user-select: none; transition: background 0.15s; }
+  .prompt-header:hover { background: rgba(255,255,255,0.02); }
+
+  .prompt-tag { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; padding: 3px 9px; border-radius: 4px; white-space: nowrap; flex-shrink: 0; }
+  .pt-context { background: var(--green-dim); color: var(--green); border: 1px solid rgba(0,229,160,0.3); }
+  .pt-design  { background: var(--green-dim); color: var(--green); border: 1px solid rgba(0,229,160,0.25); }
+  .pt-m1 { background: var(--green-dim); color: var(--green); border: 1px solid rgba(0,229,160,0.25); }
+  .pt-m2 { background: var(--blue-dim); color: var(--blue); border: 1px solid rgba(77,159,255,0.25); }
+  .pt-m3 { background: var(--amber-dim); color: var(--amber); border: 1px solid rgba(255,184,48,0.25); }
+  .pt-m4 { background: var(--teal-dim); color: var(--teal); border: 1px solid rgba(38,212,212,0.25); }
+  .pt-m5 { background: var(--purple-dim); color: var(--purple); border: 1px solid rgba(179,136,255,0.25); }
+  .pt-m6 { background: var(--red-dim); color: var(--red); border: 1px solid rgba(255,92,92,0.25); }
+  .pt-util { background: rgba(255,255,255,0.04); color: var(--muted); border: 1px solid var(--border); }
+
+  .prompt-title { font-size: 14px; font-weight: 600; color: var(--text); flex: 1; }
+  .prompt-toggle { font-size: 13px; color: var(--muted); transition: transform 0.2s; flex-shrink: 0; }
+  .prompt-card.open .prompt-toggle { transform: rotate(180deg); }
+  .prompt-body { display: none; border-top: 1px solid var(--border); }
+  .prompt-card.open .prompt-body { display: block; }
+
+  .prompt-meta { padding: 8px 18px; background: var(--surface); font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); letter-spacing: 0.07em; border-bottom: 1px solid var(--border); }
+
+  .prompt-text-wrap { position: relative; padding: 14px 18px; }
+  .prompt-text { background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 16px; font-family: 'DM Mono', monospace; font-size: 11.5px; line-height: 1.7; color: #ccc; white-space: pre-wrap; word-break: break-word; max-height: 500px; overflow-y: auto; }
+  .prompt-text::-webkit-scrollbar { width: 4px; }
+  .prompt-text::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  .copy-btn { position: absolute; top: 22px; right: 26px; font-family: 'DM Mono', monospace; font-size: 10px; background: var(--card); border: 1px solid var(--border); color: var(--muted); padding: 5px 12px; border-radius: 4px; cursor: pointer; letter-spacing: 0.06em; transition: all 0.15s; z-index: 2; }
+  .copy-btn:hover { color: var(--green); border-color: rgba(0,229,160,0.4); }
+  .copy-btn.copied { color: var(--green); border-color: var(--green); background: var(--green-dim); }
+
+  footer { max-width: 900px; margin: 60px auto 0; font-family: 'DM Mono', monospace; font-size: 10px; color: #1e2e1e; text-align: center; letter-spacing: 0.14em; }
+</style>
+</head>
+<body>
+
+<!-- SITE NAV -->
+<nav style="position:sticky;top:0;z-index:100;background:rgba(8,11,8,0.92);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid #1c241c;padding:0 20px;">
+  <div style="max-width:900px;margin:0 auto;height:44px;display:flex;align-items:center;justify-content:space-between;">
+    <a href="../index.html" style="font-family:'DM Mono',monospace;font-size:11px;color:#566056;text-decoration:none;display:flex;align-items:center;gap:8px;letter-spacing:0.06em;transition:color 0.15s;" onmouseover="this.style.color='#00e5a0'" onmouseout="this.style.color='#566056'">
+      <span style="font-size:14px;">←</span> references
+    </a>
+    <div style="display:flex;align-items:center;gap:16px;">
+      <a href="../curriculum/pace-circle-curriculum.html" style="font-family:'DM Mono',monospace;font-size:10px;color:#566056;text-decoration:none;letter-spacing:0.08em;border:1px solid #1c241c;padding:4px 11px;border-radius:4px;transition:all 0.15s;" onmouseover="this.style.color='#00e5a0';this.style.borderColor='rgba(0,229,160,0.35)'" onmouseout="this.style.color='#566056';this.style.borderColor='#1c241c'">← Curriculum</a>
+      <span style="font-family:'DM Mono',monospace;font-size:10px;color:#1c241c;letter-spacing:0.1em;text-transform:uppercase;">prompts</span>
+    </div>
+  </div>
+</nav>
+
+<div class="header">
+  <div class="eyebrow">PaceCircle · Prompt Library</div>
+  <h1>START<br><span>FRESH.</span></h1>
+  <div class="header-desc">One prompt per session. Each contains your full background, the finalized app design, what's been built, and what you're working on. <strong>Copy → new chat → paste as your first message.</strong> Never re-explain your background again.</div>
+</div>
+
+<div class="how-to">
+  <div class="how-to-label">How to use</div>
+  <div class="how-to-step" data-n="1.">Find the prompt matching your current week or need.</div>
+  <div class="how-to-step" data-n="2.">Click the card to expand. Click Copy to copy the full text.</div>
+  <div class="how-to-step" data-n="3.">Open a brand new Claude chat. Paste as your very first message.</div>
+  <div class="how-to-step" data-n="4.">Work through the week. Start a new chat for the next week.</div>
+  <div class="how-to-step" data-n="5.">Mid-week bugs or questions? Use the Utility prompts at the bottom.</div>
+</div>
+
+<!-- ── CONTEXT PROMPT ── -->
+<div class="section-label"><span class="section-num">00</span><h2>Project Context — Quick Reference</h2><div class="line"></div></div>
+<div class="prompts-wrap">
+<div class="prompt-card" id="p-ctx">
+  <div class="prompt-header" onclick="toggle('p-ctx')">
+    <span class="prompt-tag pt-context">Context</span>
+    <span class="prompt-title">Full Project Context — Paste When Claude Needs Background</span>
+    <span class="prompt-toggle">▼</span>
+  </div>
+  <div class="prompt-body">
+    <div class="prompt-meta">Use when: starting any conversation where Claude needs to understand who you are and what you're building. Also useful mid-conversation if Claude seems to have lost context.</div>
+    <div class="prompt-text-wrap">
+      <button class="copy-btn" onclick="copyPrompt('t-ctx')">Copy</button>
+      <div class="prompt-text" id="t-ctx">## PaceCircle — Full Project Context
+
+### Who I am
+- Computer Science + Information Science double major, UNC Chapel Hill
+- Software Engineer 2 at Bank of America (web application modernization using Angular, database modernization, legacy Autosys jobs, SQL, large database management)
+- Java: learned in college, refreshed recently. I struggled with unfamiliar Java packages (StopWatch, Actuator), working inside a full application beyond CRUD, and explaining tradeoffs out loud
+- I am building PaceCircle to close that gap while creating something I would genuinely use and can share
+- Common Java mistakes I still make: Python habits bleeding in — == vs .equals(), .length vs .size(), forgetting generic wrappers (Optional<Double> not Optional<double>)
+
+### My learning preferences
+- Do NOT give me answers or code upfront
+- Ask clarifying questions and nudge me toward the answer
+- Only give direct answers for genuinely new concepts I've never encountered
+- Be strict — flag incorrect statements and gaps rather than letting them pass
+- I prefer to reason through logic independently after targeted hints
+
+### The project: PaceCircle
+A web-based fitness calendar app with a low-pressure social accountability layer.
+
+**Core concept:** You plan workouts on a personal calendar. You belong to invite-only "circles" (small groups: "Morning Runners", "Pilates Girls", "Work Gym Crew"). When creating a workout event, you choose visibility: Private, or shared with any/all of your circles. Circle members see your shared workouts in their Feed tab and can tap "Count me in" to silently RSVP. Both the creator and all joiners see who is attending.
+
+**Finalized design decisions:**
+- Primary view: personal calendar (your workouts only, like Google Calendar)
+- Circle activity: separate Feed tab — not overlaid on the main calendar
+- Circles: invite-only via shareable link or join code. No public search.
+- Circles can overlap: one workout can be posted to multiple circles simultaneously
+- Join visibility: Option B — both creator and all joiners see each other's names on the RSVP list
+- Joining auto-expires when the event datetime passes. Future feature: user-configurable expiry.
+- Location/meetup point: optional field on each workout event
+- RSVP button label: "Count me in"
+- Account required: email + username + password (fast registration). No guest access.
+- Launch platform: web app first (React + TypeScript, deployed to Vercel). React Native + App Store later.
+- Workout types (enum): RUN, WALK, CYCLING, PILATES_BARRE, STRENGTH_GYM, YOGA, SWIM, OTHER
+- OTHER type has an optional customActivityLabel text field (e.g. "Pickleball", "Aerial Silks")
+- Google Calendar sync: stretch goal after web launch, not in MVP
+
+**Tech stack:**
+- Backend: Java 21, Spring Boot 3.x, PostgreSQL, Spring Security + JWT, Maven
+- Frontend: React + TypeScript, deployed to Vercel (React Native comes later for App Store)
+- Deployment: backend on Railway or Fly.io, frontend on Vercel
+- PostgreSQL running locally on localhost:5432 (Homebrew on Mac)
+- Start command: /opt/homebrew/opt/postgresql@18/bin/postgres -D /opt/homebrew/var/postgresql@18
+
+**Core data model (entities):**
+- User: id, email, username, passwordHash, createdAt
+- WorkoutEvent: id, userId, activityType (enum), customActivityLabel (nullable), scheduledAt (ZonedDateTime), durationMinutes, locationName (nullable), locationDetails (nullable), visibility (PRIVATE / CIRCLE), circleIds (join table), expiresAt (= scheduledAt + durationMinutes), createdAt
+- Circle: id, name, createdByUserId, joinCode (unique), createdAt
+- CircleMembership: id, circleId, userId, joinedAt
+- WorkoutCircle: id, workoutEventId, circleId (many-to-many between events and circles)
+- WorkoutJoin: id, workoutEventId, userId, joinedAt (the "Count me in" RSVP)
+
+**Key business rules:**
+- A user can only see a WorkoutEvent if: they created it, OR they are in at least one circle the event was posted to
+- WorkoutJoin records where WorkoutEvent.scheduledAt is in the past are considered expired — exclude from active RSVPs
+- Deleting a circle does not delete its workout events — events lose that circle association only
+- A user leaving a circle loses visibility to that circle's future events immediately</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ── DESIGN DISCUSSION ── -->
+<div class="section-label"><span class="section-num">01</span><h2>Design &amp; Architecture Discussions</h2><div class="line"></div></div>
+<div class="prompts-wrap">
+<div class="prompt-card" id="p-design">
+  <div class="prompt-header" onclick="toggle('p-design')">
+    <span class="prompt-tag pt-design">Design</span>
+    <span class="prompt-title">App Design Discussion — Resolve Open Questions or Plan Features</span>
+    <span class="prompt-toggle">▼</span>
+  </div>
+  <div class="prompt-body">
+    <div class="prompt-meta">Use when: thinking through a new feature, resolving a design ambiguity, planning a data model before coding, or reconsidering a decision</div>
+    <div class="prompt-text-wrap">
+      <button class="copy-btn" onclick="copyPrompt('t-design')">Copy</button>
+      <div class="prompt-text" id="t-design">I'm designing and building PaceCircle and need help thinking through a product or architecture decision. Please help me reason through tradeoffs — give me options with pros/cons, push back if something is too complex for my level, and flag anything that needs to be resolved before I write code.
+
+## Full project context
+
+### Who I am
+SWE2 at Bank of America. CS + Info Science grad UNC. Building PaceCircle to close a production Java gap. Java CRUD comfortable, getting lost beyond that. Common mistakes: Python habits (self/this, append/add, ==/equals, length/size).
+
+### The project: PaceCircle
+Web-based fitness calendar app with low-pressure social accountability.
+- Personal calendar view (your workouts only)
+- Separate Feed tab for circle activity
+- Invite-only circles via join code
+- Workout events can be posted to multiple circles simultaneously
+- "Count me in" RSVP — both creator and joiners see each other's names
+- RSVPs auto-expire when event time passes
+- Optional location/meetup point on events
+- Workout types: RUN, WALK, CYCLING, PILATES_BARRE, STRENGTH_GYM, YOGA, SWIM, OTHER (+ customActivityLabel)
+- Account required (email + username + password)
+- Launch: web app (React + TypeScript + Vercel) first, React Native + App Store later
+
+### Tech stack
+Backend: Java 21, Spring Boot 3.x, PostgreSQL, Spring Security + JWT
+Frontend: React + TypeScript, Vercel
+Backend deployed: Railway or Fly.io
+
+### Core entities
+User, WorkoutEvent (with activityType enum + optional customActivityLabel, scheduledAt as ZonedDateTime, visibility, expiresAt), Circle (with joinCode), CircleMembership, WorkoutCircle (event↔circle join table), WorkoutJoin (RSVPs)
+
+### Key rules
+- Users see events they created OR events in circles they belong to
+- Expired joins (past scheduledAt) excluded from active RSVPs
+- Leaving a circle removes visibility to that circle's future events immediately
+
+## What I want to discuss today
+[DESCRIBE: the specific design question, feature, or decision you're working through]
+
+Please start by asking me what outcome I'm optimizing for — that usually reveals which option is actually right before we get into implementation details.</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ── MODULE 1 ── -->
+<div class="section-label"><span class="section-num">02</span><h2>Module 1 — Java Spring Boot Beyond CRUD (Weeks 1–3)</h2><div class="line"></div></div>
+<div class="prompts-wrap">
+
+<div class="prompt-card" id="p-w1">
+  <div class="prompt-header" onclick="toggle('p-w1')">
+    <span class="prompt-tag pt-m1">M1 · Week 1</span>
+    <span class="prompt-title">Project Setup + Layered Architecture</span>
+    <span class="prompt-toggle">▼</span>
+  </div>
+  <div class="prompt-body">
+    <div class="prompt-meta">Focus: Spring Boot structure, entities + JPA relationships, @Transactional, controller→service→repository pattern, first GET/POST endpoints</div>
+    <div class="prompt-text-wrap">
+      <button class="copy-btn" onclick="copyPrompt('t-w1')">Copy</button>
+      <div class="prompt-text" id="t-w1">I'm in Week 1 of a 16-week curriculum building PaceCircle — a web fitness calendar app with social circles. Help me work through this week's material. Do NOT give me code or answers upfront. Ask questions, give nudges, and let me reason through the logic myself.
+
+## Who I am
+SWE2 at Bank of America. CS + Info Science grad UNC. Java: comfortable with basic CRUD, lost beyond that. forgetting capital letter generics like Optional<Double>). Building this to close a production Java gap.
+
+## The project: PaceCircle
+Web fitness calendar app. Users plan workouts on a personal calendar, belong to invite-only circles, and share workouts with those circles. Others tap "Count me in" to RSVP. Both creator and joiners see each other's names.
+
+## Tech stack
+Java 21, Spring Boot 3.x, PostgreSQL on localhost:5432, Maven.
+Start Postgres: /opt/homebrew/opt/postgresql@18/bin/postgres -D /opt/homebrew/var/postgresql@18
+Frontend (later): React + TypeScript on Vercel.
+
+## Built so far
+Nothing — this is Week 1, Day 1.
+
+## This week's goals
+1. Understand Spring Boot project structure — purpose of every file and folder
+2. Create the PaceCircle project (start.spring.io — Maven, Java 21, Spring Web + Spring Data JPA + PostgreSQL Driver + Validation)
+3. Define entities: User, WorkoutEvent, Circle, CircleMembership, WorkoutCircle (join table), WorkoutJoin
+4. Write repositories and service stubs (scaffolding — no real logic yet)
+5. Build GET /v1/workout-events and POST /v1/workout-events and verify in Postman
+6. Understand @Transactional: what it does, when to use it, and the internal-call proxy gotcha
+
+## Key concepts this week
+- Controller → Service → Repository: three layers, each with one responsibility. HTTP lives in the controller. Business rules live in the service. Database queries live in the repository. Never cross these lines.
+- @Entity + JPA relationships: User has many WorkoutEvents (@OneToMany). WorkoutEvent belongs to User (@ManyToOne). WorkoutCircle is a join table connecting WorkoutEvent and Circle.
+- FetchType.LAZY vs EAGER: LAZY (default) loads related entities only when accessed. EAGER loads them immediately. LAZY is almost always correct — EAGER triggers the N+1 problem.
+- @Transactional: wraps the method in a DB transaction. If anything throws a RuntimeException, the whole operation rolls back. Critical gotcha: calling a @Transactional method from within the SAME class bypasses Spring's proxy — the transaction won't work.
+
+## Resources
+- Baeldung: "Spring Boot Project Structure", "Spring Data JPA Tutorial", "Spring @Transactional"
+- spring.io/guides/gs/rest-service (official first controller guide)
+- start.spring.io (project generator)
+- PostgreSQL + pgAdmin or psql to verify your tables are created
+
+## Week 1 milestone
+Spring Boot project running. All 6 entities created in PostgreSQL. GET and POST for WorkoutEvents working in Postman. You can explain the @Transactional internal-call gotcha.
+
+Start by asking me what I think the purpose of the Service layer is and why business logic shouldn't live in the Controller. Don't tell me — make me reason through it.</div>
+    </div>
+  </div>
+</div>
+
+<div class="prompt-card" id="p-w2">
+  <div class="prompt-header" onclick="toggle('p-w2')">
+    <span class="prompt-tag pt-m1">M1 · Week 2</span>
+    <span class="prompt-title">java.time, Streams &amp; the Standard Library</span>
+    <span class="prompt-toggle">▼</span>
+  </div>
+  <div class="prompt-body">
+    <div class="prompt-meta">Focus: java.time (Instant, LocalDate, ZonedDateTime, Duration), Java Streams API, date-range filtering, streak calculation, groupingBy collector</div>
+    <div class="prompt-text-wrap">
+      <button class="copy-btn" onclick="copyPrompt('t-w2')">Copy</button>
+      <div class="prompt-text" id="t-w2">I'm in Week 2 of building PaceCircle. Help me learn java.time and Streams. Do NOT give answers upfront — nudge me and let me reason through it.
+
+## Who I am
+SWE2 at Bank of America. CS + Info Science grad UNC. Java: CRUD comfortable, Weeks 1 complete. Python habits still slip in (self/this, append/add, ==/equals, length/size).
+
+## PaceCircle
+Web fitness calendar app. Users plan workouts, join invite-only circles, share workouts with circles, RSVP with "Count me in." Both creator and joiners see each other's names.
+Backend: Java 21, Spring Boot 3.x, PostgreSQL. Frontend later: React + TypeScript.
+
+## Built so far (Week 1 complete)
+- Project running locally
+- Entities: User, WorkoutEvent (activityType enum: RUN/WALK/CYCLING/PILATES_BARRE/STRENGTH_GYM/YOGA/SWIM/OTHER, scheduledAt as ZonedDateTime, durationMinutes, locationName nullable, expiresAt), Circle (joinCode), CircleMembership, WorkoutCircle (join table), WorkoutJoin
+- Repositories + service stubs for all entities
+- GET /v1/workout-events and POST /v1/workout-events working in Postman
+- @Transactional understood including the internal-call proxy gotcha
+
+## This week's goals
+1. Master java.time: Instant, LocalDate, LocalDateTime, ZonedDateTime, Duration, Period — know when to use each
+2. Add date-range filtering: GET /v1/workout-events?from=2025-01-01&to=2025-03-31
+3. Add summary endpoint: GET /v1/workout-events/summary (total duration grouped by activityType using Streams)
+4. Add streak endpoint: GET /v1/workout-events/streak (consecutive days with at least one workout)
+5. Add RSVP expiry logic: filter out WorkoutJoin records where WorkoutEvent.scheduledAt is in the past
+
+## Key concepts
+- Instant vs ZonedDateTime: Instant is a UTC timestamp (when was this event created?). ZonedDateTime is a date+time+timezone (when does this workout happen, in whose timezone?). PaceCircle stores scheduledAt as ZonedDateTime because a 6pm run in Boston is a different moment than 6pm in LA.
+- Stream.collect(Collectors.groupingBy): groups a list into a Map by a key function. activities.stream().collect(groupingBy(WorkoutEvent::getActivityType, summingInt(WorkoutEvent::getDurationMinutes))) — total minutes per activity type in one line.
+- Why not java.util.Date: it's mutable, thread-unsafe, and timezone-broken. Every real codebase uses java.time. If you see Date in legacy code, it's a code smell.
+- Streak logic: sort events by date descending, check consecutive LocalDates, stop when you hit a gap.
+
+## Resources
+- Baeldung: "Java 8 Date/Time API", "The Java 8 Stream API Tutorial", "Guide to Java 8 Collectors"
+- Oracle: docs.oracle.com/javase/8/docs/api/java/time/package-summary.html
+- Search: "java.time cheat sheet 2024"
+
+## Week 2 milestone
+Date-range filtering works. Summary endpoint uses groupingBy (no raw loops). Streak endpoint uses java.time. Expired RSVPs filtered correctly. Zero java.util.Date in the codebase.
+
+Start by asking me: what's the difference between Instant and ZonedDateTime, and which one should I use to store a workout's scheduled time? Make me think through the timezone implications before telling me.</div>
+    </div>
+  </div>
+</div>
+
+<div class="prompt-card" id="p-w3">
+  <div class="prompt-header" onclick="toggle('p-w3')">
+    <span class="prompt-tag pt-m1">M1 · Week 3</span>
+    <span class="prompt-title">Validation, Error Handling &amp; DTOs</span>
+    <span class="prompt-toggle">▼</span>
+  </div>
+  <div class="prompt-body">
+    <div class="prompt-meta">Focus: Bean Validation (@Valid, @NotNull, @FutureOrPresent), @ControllerAdvice, custom exceptions, DTO pattern, MapStruct</div>
+    <div class="prompt-text-wrap">
+      <button class="copy-btn" onclick="copyPrompt('t-w3')">Copy</button>
+      <div class="prompt-text" id="t-w3">I'm in Week 3 of building PaceCircle. Help me learn validation, error handling, and the DTO pattern. Nudges only — no answers upfront.
+
+## Who I am
+SWE2 at Bank of America. CS + Info Science grad UNC. Java: Weeks 1-2 complete. Comfortable with CRUD, java.time, and Streams.
+
+## PaceCircle
+Web fitness calendar app with invite-only circles and "Count me in" RSVPs.
+Backend: Java 21, Spring Boot 3.x, PostgreSQL.
+
+## Built so far (Weeks 1–2)
+- All entities in PostgreSQL: User, WorkoutEvent, Circle, CircleMembership, WorkoutCircle, WorkoutJoin
+- GET/POST endpoints for WorkoutEvents
+- Date-range filtering, activity summary (groupingBy), streak endpoint
+- RSVP expiry filtering (past scheduledAt excluded)
+
+## This week's goals
+1. Add Bean Validation to all request DTOs: @Valid, @NotNull, @NotBlank, @Min, @Max, @FutureOrPresent on scheduledAt
+2. Implement @ControllerAdvice with @ExceptionHandler for global exception handling
+3. Create custom exceptions: WorkoutEventNotFoundException, CircleNotFoundException, UnauthorizedAccessException, CircleJoinCodeInvalidException
+4. Create request DTOs (CreateWorkoutEventRequest, JoinCircleRequest) and response DTOs (WorkoutEventResponse, CircleResponse) — separate from JPA entities
+5. Add MapStruct for entity↔DTO mapping (no boilerplate)
+6. Ensure no JPA entity is ever returned directly from a controller
+
+## Key concepts
+- Why DTOs not entities: (1) entities expose your DB schema — a new column becomes part of your API contract accidentally. (2) Circular references between entities cause infinite JSON serialization loops. (3) DTOs can include computed fields like joinCount or isExpired that aren't stored columns. Always separate your persistence model from your API model.
+- @ControllerAdvice: one class handles exceptions for ALL controllers. Throw WorkoutEventNotFoundException anywhere in a service — it automatically becomes a clean {"error": "Workout event not found", "status": 404} response. Without it, you need try/catch in every controller.
+- @Valid placement: goes on the @RequestBody parameter in the controller method. Without it, @NotNull on your DTO fields does absolutely nothing — Bean Validation is not triggered.
+- MapStruct: generates the entity→DTO and DTO→entity conversion code at compile time. You write an interface with @Mapper, MapStruct generates the implementation. Zero runtime reflection.
+
+## Resources
+- Baeldung: "Bean Validation with Spring Boot", "Exception Handling for REST with Spring", "Quick Guide to MapStruct"
+- mapstruct.org — Getting Started (10 min, very clear)
+- Baeldung: "Entity To DTO Conversion for a Spring REST API"
+
+## Week 3 / Module 1 milestone
+Every POST validates input — bad requests return clean JSON errors, never stack traces. @ControllerAdvice handles all exceptions. DTOs exist for all input/output shapes. No entity returned directly from any controller. MapStruct handles all mapping.
+
+Start by asking me: why would returning the WorkoutEvent JPA entity directly from my controller be a problem? What could go wrong? Make me name at least two specific failure modes before you add anything.</div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<!-- ── MODULE 2 ── -->
+<div class="section-label"><span class="section-num">03</span><h2>Module 2 — Testing, Profiling &amp; Background Jobs (Weeks 4–6)</h2><div class="line"></div></div>
+<div class="prompts-wrap">
+
+<div class="prompt-card" id="p-w4">
+  <div class="prompt-header" onclick="toggle('p-w4')">
+    <span class="prompt-tag pt-m2">M2 · Week 4</span>
+    <span class="prompt-title">Testing with JUnit 5 + Mockito</span>
+    <span class="prompt-toggle">▼</span>
+  </div>
+  <div class="prompt-body">
+    <div class="prompt-meta">Focus: unit vs integration tests, @Mock + @InjectMocks, when/thenReturn, verify(), assertThrows, @SpringBootTest with H2, edge case coverage</div>
+    <div class="prompt-text-wrap">
+      <button class="copy-btn" onclick="copyPrompt('t-w4')">Copy</button>
+      <div class="prompt-text" id="t-w4">I'm in Week 4 of building PaceCircle. Help me learn testing with JUnit 5 and Mockito. Nudges only — no code answers upfront.
+
+## Who I am
+SWE2 at Bank of America. CS + Info Science grad UNC. Building PaceCircle to close a production Java gap. Weeks 1-3 complete.
+
+## PaceCircle
+Web fitness calendar app with invite-only circles and "Count me in" RSVPs.
+Backend: Java 21, Spring Boot 3.x, PostgreSQL.
+
+## Built so far (Weeks 1–3)
+- All entities, repositories, services, and controllers
+- DTOs with MapStruct, @ControllerAdvice with custom exceptions, Bean Validation
+- Date-range filtering, streak endpoint, summary with Streams, RSVP expiry logic
+- No JPA entity returned directly from any controller
+
+## This week's goals
+1. Write unit tests for service layer: mock the repository, control what it returns, test logic in isolation
+2. Learn: @Mock, @InjectMocks, @ExtendWith(MockitoExtension.class), when().thenReturn(), verify(mock, times(n)).method(), assertThrows()
+3. Write integration tests with @SpringBootTest using H2 in-memory database (not real PostgreSQL)
+4. Test edge cases for streak logic: 0 events, 1 event, gap in the middle, events spanning midnight, duplicate same-day events
+5. Use verify() to assert that a service method only calls the repository ONCE — catching accidental N+1 DB calls
+6. Understand the difference between @Mock and @MockBean (interview question)
+
+## Key concepts
+- Unit test: tests ONE class in isolation. All dependencies (repositories, other services) are mocked — you control their return values. Runs in milliseconds. Proves: is my logic correct given these inputs?
+- Integration test: tests multiple layers together with a real (H2 test) database. Runs in seconds. Proves: do the layers connect correctly?
+- @Mock creates a Mockito mock. @InjectMocks creates the class under test and injects @Mock fields into it.
+- @MockBean (Spring): replaces a Spring bean in the application context with a mock. Use this in @SpringBootTest tests. @Mock is Mockito-only, no Spring involved — faster, for pure unit tests.
+- verify(repository, times(1)).findById(id): asserts the repository was called exactly once. If this fails, you have an N+1 problem — your code is hitting the DB more times than it should per request.
+- H2: an in-memory relational database. Spring Boot auto-configures it for tests when it's on the test classpath. Your PostgreSQL-specific SQL might need minor adjustments for H2 compatibility.
+
+## Resources
+- Baeldung: "Testing with Spring Boot and @SpringBootTest", "Mockito Tutorial", "Mockito Verify Cookbook"
+- JUnit 5 user guide: junit.org/junit5/docs/current/user-guide
+- Baeldung: "A Quick Guide to @SpringBootTest"
+
+## Week 4 milestone
+Every service method has at least one unit test. Streak and RSVP expiry logic has full edge case coverage. ./mvnw test is green. You can explain @Mock vs @MockBean clearly.
+
+Start by asking me what the difference is between a unit test and an integration test — specifically which one I should write first for the streak calculation logic and why. Don't tell me the answer.</div>
+    </div>
+  </div>
+</div>
+
+<div class="prompt-card" id="p-w5">
+  <div class="prompt-header" onclick="toggle('p-w5')">
+    <span class="prompt-tag pt-m2">M2 · Week 5</span>
+    <span class="prompt-title">StopWatch, Actuator &amp; Structured Logging</span>
+    <span class="prompt-toggle">▼</span>
+  </div>
+  <div class="prompt-body">
+    <div class="prompt-meta">Focus: org.springframework.util.StopWatch, Spring Actuator endpoints, SLF4J log levels — directly addressing the interview failure</div>
+    <div class="prompt-text-wrap">
+      <button class="copy-btn" onclick="copyPrompt('t-w5')">Copy</button>
+      <div class="prompt-text" id="t-w5">I'm in Week 5 of building PaceCircle. Help me learn StopWatch profiling, Spring Actuator, and structured logging. Nudges only. This week directly addresses the technical gap partly where I didn't recognize org.springframework.util.StopWatch and Spring Actuator in legacy Java code.
+
+## Who I am
+SWE2 at Bank of America. CS + Info Science grad UNC. Weeks 1-4 complete.
+
+## PaceCircle
+Web fitness calendar app with invite-only circles and "Count me in" RSVPs.
+Backend: Java 21, Spring Boot 3.x, PostgreSQL.
+
+## Built so far (Weeks 1–4)
+Full CRUD with DTOs, validation, exception handling. java.time, Streams, streak/expiry logic. JUnit 5 + Mockito test coverage with edge cases.
+
+## This week's goals
+1. Add org.springframework.util.StopWatch to service methods — time named tasks, call prettyPrint(), log the output
+2. Add spring-boot-starter-actuator dependency
+3. Explore /actuator/health, /actuator/metrics, /actuator/info — understand what each exposes and who calls it in production
+4. Configure actuator endpoint exposure in application.properties (management.endpoints.web.exposure.include)
+5. Replace ALL System.out.println with SLF4J (private static final Logger log = LoggerFactory.getLogger(...)
+6. Use the correct log level for every statement: TRACE, DEBUG, INFO, WARN, ERROR
+
+## Key concepts
+- org.springframework.util.StopWatch: Spring's built-in performance timer. new StopWatch(); sw.start("task name"); ...work...; sw.stop(); log.info(sw.prettyPrint()). Prints a table: task name, time in ms, % of total. Used to identify which service method step is slow.
+- Spring Boot Actuator: production-ready observability endpoints added with one dependency. /actuator/health: returns UP/DOWN — load balancers ping this to decide if your instance should receive traffic. /actuator/metrics: JVM heap, GC pauses, HTTP request counts, DB pool size. Companies wire these to Datadog, Grafana, or Prometheus.
+- SLF4J log levels (ascending severity): TRACE → DEBUG → INFO → WARN → ERROR. Set the threshold per package in application.properties: logging.level.com.pacecircle=DEBUG. In production, typically INFO. Locally, DEBUG.
+- Never log: passwords, JWT tokens, full request bodies with PII, HealthKit biometric data.
+
+## Resources
+- Spring Actuator docs: docs.spring.io/spring-boot/docs/current/reference/html/actuator.html
+- Baeldung: "A Guide to Spring Boot Actuator", "Introduction to Spring's StopWatch", "Logging in Spring Boot"
+- application.properties reference: docs.spring.io/spring-boot/docs/current/reference/html/application-properties.html
+
+## Week 5 milestone
+StopWatch profiling on at least 3 service methods. Actuator enabled and you can explain what /actuator/health is for. Zero System.out.println. Every log statement uses the correct level with a reason you can defend.
+
+Start by asking me: what does /actuator/health return and who actually calls it in a production system? Think about what happens when an app instance goes down. Make me reason through it before you explain.</div>
+    </div>
+  </div>
+</div>
+
+<div class="prompt-card" id="p-w6">
+  <div class="prompt-header" onclick="toggle('p-w6')">
+    <span class="prompt-tag pt-m2">M2 · Week 6</span>
+    <span class="prompt-title">Background Jobs — @Scheduled &amp; @Async</span>
+    <span class="prompt-toggle">▼</span>
+  </div>
+  <div class="prompt-body">
+    <div class="prompt-meta">Focus: @Scheduled with cron expressions, @Async + CompletableFuture, @EnableScheduling/@EnableAsync, nightly expiry cleanup job, async circle invite emails</div>
+    <div class="prompt-text-wrap">
+      <button class="copy-btn" onclick="copyPrompt('t-w6')">Copy</button>
+      <div class="prompt-text" id="t-w6">I'm in Week 6 of building PaceCircle. Help me learn background jobs and async processing. Nudges only — no answers upfront.
+
+## Who I am
+SWE2 at Bank of America. CS + Info Science grad UNC. Weeks 1-5 complete.
+
+## PaceCircle
+Web fitness calendar app with invite-only circles and "Count me in" RSVPs.
+Backend: Java 21, Spring Boot 3.x, PostgreSQL.
+
+## Built so far (Weeks 1–5)
+Full CRUD, DTOs, validation, exception handling, Streams, java.time, tests, StopWatch profiling, Actuator, SLF4J logging.
+
+## This week's goals
+1. Write a nightly @Scheduled job that marks expired WorkoutJoin records (scheduledAt in the past) with an isExpired flag or moves them to an archive — runs at 2am every day
+2. Write a weekly @Scheduled job that deactivates circles with no activity in 90 days (soft delete / isActive flag)
+3. Write a cron expression for "every day at 2am" and "every Monday at 9am" — understand the 6-field cron format
+4. Add @EnableScheduling to the main @SpringBootApplication class
+5. Scaffold an @Async method for sending circle join confirmation emails — returns 201 Created immediately, email sends in background via CompletableFuture<Void>
+6. Understand why @Async has the same internal-call proxy limitation as @Transactional
+
+## Key concepts
+- @Scheduled(cron = "0 0 2 * * *"): runs at 2am every day. Cron format: second minute hour day-of-month month day-of-week. Use crontab.guru to verify expressions. Requires @EnableScheduling on a @Configuration or @SpringBootApplication class.
+- @Async: runs the annotated method on a thread pool thread, returning immediately. The calling thread gets a CompletableFuture<T> back — it doesn't wait. Requires @EnableAsync. Perfect for: sending emails, Slack notifications, anything that shouldn't block the HTTP response.
+- Internal-call proxy limitation: SAME as @Transactional. If class A calls its own @Async method, Spring's proxy is bypassed — the method runs synchronously. The @Async method must be in a DIFFERENT Spring bean from the caller.
+- CompletableFuture<Void>: the return type for @Async methods that don't return a value. The caller can chain .thenRun() or .exceptionally() to handle completion or errors.
+- 202 Accepted vs 200 OK: when work happens asynchronously (email send, circle import), return 202. It means "I received and accepted your request, processing is happening." 200 means "I finished."
+
+## Resources
+- Baeldung: "The @Scheduled Annotation in Spring", "Async Support in Spring", "Guide To CompletableFuture"
+- crontab.guru — type cron expressions, see plain-English explanations
+- Spring docs: docs.spring.io/spring-framework/reference/integration/scheduling.html
+
+## Week 6 / Module 2 milestone
+Nightly expiry job runs at 2am. Weekly circle deactivation job runs. @Async email scaffold returns 202 immediately. You can explain the internal-call proxy limitation for both @Async and @Transactional.
+
+Start by asking me: what happens to app performance if I run the expiry job inside the GET endpoint every time a user loads their feed? Why is a scheduled background job better? Make me quantify the problem before explaining the solution.</div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<!-- ── MODULE 3 ── -->
+<div class="section-label"><span class="section-num">04</span><h2>Module 3 — React Frontend (Weeks 7–9)</h2><div class="line"></div></div>
+<div class="prompts-wrap">
+
+<div class="prompt-card" id="p-w7">
+  <div class="prompt-header" onclick="toggle('p-w7')">
+    <span class="prompt-tag pt-m3">M3 · Week 7</span>
+    <span class="prompt-title">React + TypeScript Project Setup</span>
+    <span class="prompt-toggle">▼</span>
+  </div>
+  <div class="prompt-body">
+    <div class="prompt-meta">Focus: Vite + React + TypeScript project creation, folder structure, React Router v6, layout components, basic calendar grid component</div>
+    <div class="prompt-text-wrap">
+      <button class="copy-btn" onclick="copyPrompt('t-w7')">Copy</button>
+      <div class="prompt-text" id="t-w7">I'm in Week 7 of building PaceCircle — starting the React frontend. I know TypeScript and React basics from prior projects (Wake Smiles: React/TypeScript/Supabase). Help me learn what's new or specific to this setup. Nudges only — no code answers upfront.
+
+## Who I am
+SWE2 at Bank of America. CS + Info Science grad UNC. TypeScript and React basics known. No Vite experience. No React Router v6 experience. Backend Weeks 1-6 complete.
+
+## PaceCircle — frontend scope
+Web app (React + TypeScript + Vite). Deployed to Vercel. Mobile (React Native) comes later.
+Core views: Calendar (personal workouts only), Feed (circle members' shared workouts), Circles (manage your circles), Profile. Auth: Login + Register pages.
+
+## Backend (built, Weeks 1–6)
+Running on localhost:8080. Endpoints exist for: workout events (CRUD + date filtering + streak), circles (create, join by code, list members), RSVP (join/unjoin), auth (register/login returning JWT).
+
+## This week's goals
+1. Create project: npm create vite@latest pacecircle-web -- --template react-ts
+2. Install dependencies: react-router-dom v6, axios, @tanstack/react-query, date-fns (date utility library)
+3. Set up React Router with routes: /login, /register, /, /feed, /circles, /profile
+4. Build an AppLayout component (persistent top nav/sidebar visible after login)
+5. Build the AuthLayout (centered card for login/register — no nav)
+6. Create a protected route wrapper: if no JWT in localStorage, redirect to /login
+7. Build a basic calendar grid: 7 columns (days of week), rows of weeks for current month, click a day to see that day's events in a sidebar panel
+
+## Key concepts
+- Vite: the modern build tool that replaced Create React App. Faster dev server, faster builds. The folder structure is slightly different — src/ contains your React app, vite.config.ts configures the build.
+- React Router v6: uses createBrowserRouter() (new API) or <BrowserRouter>. Routes are defined as a tree. Use <Outlet /> in layout components to render child routes. useNavigate() replaces history.push(). useParams() for URL params.
+- Protected route: a wrapper component that reads the JWT from localStorage (or a context), and renders <Outlet /> if authenticated, or <Navigate to="/login" /> if not.
+- date-fns: a lightweight date utility library. startOfMonth(), endOfMonth(), eachDayOfInterval(), format(), isSameDay() — these are what you'll use to build the calendar grid. Prefer over native Date math which is error-prone.
+- Component structure for calendar: MonthCalendar → WeekRow → DayCell. Each DayCell receives a date and an array of WorkoutEvents for that day. Keep components dumb — pass data down as props, handle clicks via callbacks.
+
+## Resources
+- Vite docs: vitejs.dev/guide
+- React Router v6: reactrouter.com/en/main/start/tutorial
+- date-fns docs: date-fns.org/docs (browse the function list — it's the whole library)
+- TanStack Query: tanstack.com/query/latest/docs/framework/react/quick-start
+
+## Week 7 milestone
+Vite + React + TypeScript project running. React Router set up with all routes. Protected route working (redirect to /login if no JWT). Basic calendar grid renders current month with correct day cells. AppLayout and AuthLayout built.
+
+Start by asking me how a protected route works conceptually — what needs to happen when an unauthenticated user tries to visit /feed? Let me describe the mechanism before you explain it.</div>
+    </div>
+  </div>
+</div>
+
+<div class="prompt-card" id="p-w8">
+  <div class="prompt-header" onclick="toggle('p-w8')">
+    <span class="prompt-tag pt-m3">M3 · Week 8</span>
+    <span class="prompt-title">Auth Flow + Connecting to the Backend</span>
+    <span class="prompt-toggle">▼</span>
+  </div>
+  <div class="prompt-body">
+    <div class="prompt-meta">Focus: login/register forms, JWT storage, Axios interceptor, React Query hooks, CORS config in Spring Boot, displaying real data from PostgreSQL</div>
+    <div class="prompt-text-wrap">
+      <button class="copy-btn" onclick="copyPrompt('t-w8')">Copy</button>
+      <div class="prompt-text" id="t-w8">I'm in Week 8 of building PaceCircle — connecting the React frontend to the Spring Boot backend. Nudges only — no code answers upfront.
+
+## Who I am
+SWE2 at Bank of America. CS + Info Science grad UNC. Backend Weeks 1-6 done. React frontend skeleton built (Week 7): Vite, React Router, protected routes, calendar grid component.
+
+## PaceCircle
+Web fitness calendar app with invite-only circles and "Count me in" RSVPs.
+Backend on localhost:8080. Frontend on localhost:5173 (Vite dev server).
+
+## Built so far
+- Backend: full CRUD, JWT auth, all entities, tests, StopWatch, Actuator, background jobs
+- Frontend: routing, AppLayout, AuthLayout, protected route, calendar grid component
+
+## This week's goals
+1. Build Login and Register forms — POST to /api/auth/login and /api/auth/register
+2. On successful login, store the JWT in localStorage (for now — discuss security tradeoff)
+3. Create an Axios instance with a request interceptor that adds Authorization: Bearer <token> to every request automatically
+4. Configure CORS on the Spring Boot backend to allow requests from localhost:5173 (and Vercel domain later)
+5. Set up React Query (QueryClientProvider wrapping the app)
+6. Write custom hooks: useWorkoutEvents(month, year), useMyCircles(), useCircleFeed()
+7. Display real PostgreSQL data on the calendar — your actual workout events on their scheduled dates
+
+## Key concepts
+- Axios interceptor: runs before every request. Read the JWT from localStorage, add it to the Authorization header. This way you never manually add auth headers — every API call is automatically authenticated.
+- localStorage vs httpOnly cookie for JWT: localStorage is accessible by JavaScript (XSS risk). httpOnly cookies are not accessible by JS (safer). For a learning project, localStorage is acceptable. In production, httpOnly cookies + CSRF tokens is the more secure pattern. Know the tradeoff.
+- CORS: browsers block cross-origin requests by default. Your React app on localhost:5173 calling your Spring Boot app on localhost:8080 is cross-origin. Fix: add @CrossOrigin on your controllers, OR configure a global CORS policy in Spring Security (better). In Spring Security config: .cors(cors -> cors.configurationSource(corsConfigurationSource())).
+- React Query useQuery: useQuery({ queryKey: ['workout-events', month, year], queryFn: () => fetchWorkoutEvents(month, year) }) returns { data, isLoading, isError, refetch }. The queryKey array is the cache key — if month or year changes, it auto-refetches.
+- Why not fetch in useEffect: it doesn't handle race conditions, doesn't cache, re-fetches on every render, requires manual loading/error state. React Query solves all of this.
+
+## Resources
+- Baeldung: "Spring Boot CORS" + "Spring Security CORS"
+- Axios docs: axios-http.com/docs/interceptors
+- TanStack Query: tanstack.com/query/latest/docs/framework/react/guides/queries
+
+## Week 8 milestone
+Login and register working. JWT stored and sent automatically on every request. Real workout events from PostgreSQL displayed on the calendar. CORS errors resolved. You can explain the localStorage vs httpOnly cookie JWT tradeoff.
+
+Start by asking me: what is CORS, why does the browser enforce it, and what would actually happen if I tried to call localhost:8080 from localhost:5173 without configuring it? Let me explain the browser's security model first.</div>
+    </div>
+  </div>
+</div>
+
+<div class="prompt-card" id="p-w9">
+  <div class="prompt-header" onclick="toggle('p-w9')">
+    <span class="prompt-tag pt-m3">M3 · Week 9</span>
+    <span class="prompt-title">Core UX — Calendar, Feed, Circles &amp; RSVP</span>
+    <span class="prompt-toggle">▼</span>
+  </div>
+  <div class="prompt-body">
+    <div class="prompt-meta">Focus: workout logging modal, circle feed cards, "Count me in" optimistic update, circle creation + join by code, event detail view with RSVP list</div>
+    <div class="prompt-text-wrap">
+      <button class="copy-btn" onclick="copyPrompt('t-w9')">Copy</button>
+      <div class="prompt-text" id="t-w9">I'm in Week 9 of building PaceCircle — building the core UX flows. Nudges only — no code answers upfront.
+
+## Who I am
+SWE2 at Bank of America. CS + Info Science grad UNC. Weeks 1-8 complete.
+
+## PaceCircle
+Web fitness calendar app. Users plan workouts on a personal calendar, share with circles, and RSVP with "Count me in." Both creator and joiners see each other's names on the RSVP list. RSVPs auto-expire when the event time passes.
+
+## Built so far
+- Backend: full CRUD, JWT auth, circles, RSVPs, validation, tests, background jobs
+- Frontend: routing, auth flow, Axios interceptor, React Query hooks, calendar grid with real data from PostgreSQL
+
+## This week's goals
+1. Workout logging modal: click a calendar day → modal opens → fill activity type (dropdown with enum values + Other + customActivityLabel), date/time, duration, optional location, visibility (Private or select circles). POST to backend.
+2. Feed tab: list of upcoming shared workout events from all joined circles. Each card: activity type icon, creator username, date/time, location if set, "Count me in" button.
+3. "Count me in" button with optimistic update: tap → button state changes immediately (before API response) → POST /api/workout-events/{id}/join in background → on error, roll back button state.
+4. Event detail view: click any event → see full details + RSVP list (names of everyone who said "Count me in").
+5. Circles page: list your circles, create a new circle (name → get back a joinCode), join a circle by entering a code, see circle members.
+6. Circle join flow: enter code → POST /api/circles/join → on success, circle appears in your list.
+
+## Key concepts
+- Controlled form inputs: each form field has a useState value and an onChange that updates it. The submit handler reads all state values and POSTs. For the activity type, use a <select> with your enum values plus an "Other" option that reveals a text input for customActivityLabel.
+- Optimistic update with React Query: useMutation with an onMutate callback that manually updates the cache before the API call. If the API fails, the onError callback receives the previous cache value (returned from onMutate) and restores it. This is the pattern that makes the "Count me in" button feel instant.
+- React Query cache invalidation: after a successful POST (new workout event), call queryClient.invalidateQueries(['workout-events']) to force a refetch of the calendar data. The calendar will update automatically.
+- Modal: a dialog overlay. Use a state variable (isOpen: boolean) to control visibility. Trap focus inside the modal for accessibility. Close on Escape key and on backdrop click. Build it from scratch — this is good component practice.
+
+## Resources
+- TanStack Query: tanstack.com/query/latest/docs/framework/react/guides/optimistic-updates (read this fully — optimistic updates have a specific pattern)
+- TanStack Query: tanstack.com/query/latest/docs/framework/react/guides/mutations
+- MDN: developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog (native dialog element)
+- React docs: react.dev/learn/sharing-state-between-components (for lifting form state)
+
+## Week 9 / Module 3 milestone
+You can log a workout from the calendar. The Feed tab shows circle members' events. "Count me in" feels instant via optimistic update. Event detail shows the RSVP name list. Circle creation and join-by-code both work.
+
+Start by asking me to explain optimistic updates in my own words and describe exactly what should happen — to both the UI and the cache — when the "Count me in" API call fails after the button already changed state.</div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<!-- ── MODULE 4 ── -->
+<div class="section-label"><span class="section-num">05</span><h2>Module 4 — Auth, Security &amp; Deployment (Weeks 10–12)</h2><div class="line"></div></div>
+<div class="prompts-wrap">
+
+<div class="prompt-card" id="p-w10">
+  <div class="prompt-header" onclick="toggle('p-w10')">
+    <span class="prompt-tag pt-m4">M4 · Week 10</span>
+    <span class="prompt-title">Spring Security + Data Ownership</span>
+    <span class="prompt-toggle">▼</span>
+  </div>
+  <div class="prompt-body">
+    <div class="prompt-meta">Focus: Spring Security JWT filter chain, SecurityContextHolder, per-user data isolation, 401 vs 403, disabling CSRF for JWT APIs, security tests</div>
+    <div class="prompt-text-wrap">
+      <button class="copy-btn" onclick="copyPrompt('t-w10')">Copy</button>
+      <div class="prompt-text" id="t-w10">I'm in Week 10 of building PaceCircle — implementing proper Spring Security and data isolation. Nudges only — no answers upfront.
+
+## Who I am
+SWE2 at Bank of America. CS + Info Science grad UNC. Weeks 1-9 complete.
+
+## PaceCircle
+Web fitness calendar app. Critical security requirement: users must only access their own data and circle-visible events they're actually authorized to see. User A must never access User B's private workouts.
+
+## Built so far (Weeks 1–9)
+Full backend + React frontend. Auth endpoints exist but security isn't locked down properly yet.
+
+## This week's goals
+1. Implement a JwtAuthenticationFilter that validates the JWT on every request, extracts userId, and sets SecurityContextHolder
+2. Configure Spring Security filter chain: all /api/** endpoints require authentication, /api/auth/** is public
+3. Add ownership checks in every service method: get the authenticated userId from SecurityContextHolder, assert the resource belongs to them
+4. For circle-visible events: assert the requesting user is a member of at least one circle the event was posted to
+5. Disable CSRF in Spring Security config — understand why it's not needed for JWT APIs
+6. Return 401 for missing/invalid token, 403 for valid token but unauthorized access
+7. Write security tests: verify User A cannot access User B's private events even with a valid JWT
+
+## Key concepts
+- SecurityContextHolder: thread-local storage that holds the current request's authentication. Your JwtAuthenticationFilter parses the JWT, creates a UsernamePasswordAuthenticationToken with the userId as principal, and sets it on SecurityContextHolder.getContext().setAuthentication(...). This happens before any service method runs.
+- Ownership check in service (not controller): Long userId = getCurrentUserId(); if (!event.getUserId().equals(userId)) throw new UnauthorizedAccessException(). The service is the right place — it has access to data and knows the rules.
+- CSRF: Cross-Site Request Forgery attacks work against cookie-based session auth because browsers auto-send cookies. JWTs must be explicitly included in the Authorization header — browsers never auto-send headers. So CSRF protection is unnecessary for JWT APIs. Disable it: http.csrf(csrf -> csrf.disable()).
+- 401 Unauthorized: no valid token presented. 403 Forbidden: valid token, but you don't have permission. Use the correct code — interviewers notice when these are swapped.
+- Spring Security filter chain order matters: your JwtAuthenticationFilter must run BEFORE UsernamePasswordAuthenticationFilter.
+
+## Resources
+- Baeldung: "Spring Security with JWT" (comprehensive, read fully), "Spring Security Expressions", "Spring Boot Security Auto-Configuration"
+- Spring Security docs: docs.spring.io/spring-security/reference/servlet/authentication/index.html
+- OWASP Top 10: owasp.org/www-project-top-ten — read A01 Broken Access Control (this is exactly what you're preventing)
+
+## Week 10 milestone
+JWT filter validates every request. Every service method checks ownership. Security tests confirm User A cannot read User B's data. You can explain why JWT APIs don't need CSRF protection and the difference between 401 and 403.
+
+Start by asking me: what exactly happens if I forget the ownership check in just ONE service method? Walk me through a concrete attack scenario — what can a malicious authenticated user actually do?</div>
+    </div>
+  </div>
+</div>
+
+<div class="prompt-card" id="p-w11">
+  <div class="prompt-header" onclick="toggle('p-w11')">
+    <span class="prompt-tag pt-m4">M4 · Week 11</span>
+    <span class="prompt-title">Redis Caching + Rate Limiting</span>
+    <span class="prompt-toggle">▼</span>
+  </div>
+  <div class="prompt-body">
+    <div class="prompt-meta">Focus: Spring Cache + Redis, @Cacheable/@CacheEvict, TTL, cache invalidation strategy, Bucket4j for rate limiting</div>
+    <div class="prompt-text-wrap">
+      <button class="copy-btn" onclick="copyPrompt('t-w11')">Copy</button>
+      <div class="prompt-text" id="t-w11">I'm in Week 11 of building PaceCircle — adding Redis caching and rate limiting. Nudges only — no answers upfront. Note: I correctly identified Redis caching as a solution for hot reads — now I'm actually implementing it.
+
+## Who I am
+SWE2 at Bank of America. CS + Info Science grad UNC. Weeks 1-10 complete.
+
+## PaceCircle
+Web fitness calendar app. Backend: Java 21, Spring Boot 3.x, PostgreSQL, Spring Security + JWT.
+
+## Built so far
+Full backend + React frontend. Spring Security locked down. All core features working.
+
+## This week's goals
+1. Install Redis locally: brew install redis && brew services start redis
+2. Add spring-boot-starter-data-redis + spring-boot-starter-cache dependencies
+3. Add @Cacheable("circle-feed") to the getFeedForUser() service method — first call hits DB, subsequent calls return from Redis
+4. Add @Cacheable("circle-members") to getCircleMembers() — circle membership lists don't change often
+5. Add @CacheEvict on write methods: when a user joins a circle, evict the circle-members cache; when a new workout event is posted to a circle, evict the circle-feed cache
+6. Configure TTL: 1 hour for circle-feed, 24 hours for circle-members
+7. Profile with StopWatch before and after caching to measure latency improvement
+8. Add Bucket4j rate limiting: max 100 requests per minute per user on the feed endpoint (prevent abuse)
+
+## Key concepts
+- @Cacheable("cache-name"): first call with given parameters executes the method and stores the result in Redis. Subsequent calls with the same parameters return the cached result without executing. Spring uses method parameters as cache key by default.
+- @CacheEvict: removes cached value(s). Use on write operations. @CacheEvict(value = "circle-feed", allEntries = true) removes ALL feed cache entries (use when any circle's events change). @CacheEvict(value = "circle-members", key = "#circleId") removes only the specific circle's member cache.
+- Cache invalidation challenge: the hardest part. You must think through: which caches go stale when X happens? Missing one means users see stale data until TTL expires. Draw the dependency map: what writes invalidate which caches.
+- TTL tradeoff: longer TTL = better performance, more stale data risk. Shorter TTL = fresher data, more DB hits. For circle feed: 1 hour is acceptable (minor staleness). For a user's own calendar: no caching (must always be fresh).
+- Bucket4j token bucket algorithm: a bucket starts with N tokens. Each request consumes one token. Tokens refill at a configured rate. If the bucket is empty, the request is rejected with 429 Too Many Requests.
+
+## Resources
+- Baeldung: "A Guide to Caching in Spring", "Spring Cache Tutorial", "Bucket4j with Spring Boot"
+- Redis docs: redis.io/docs/getting-started
+- Spring Cache: docs.spring.io/spring-framework/reference/integration/cache.html
+- Bucket4j GitHub: github.com/bucket4j/bucket4j
+
+## Week 11 milestone
+circle-feed and circle-members are cached. Caches evict correctly on writes. StopWatch shows measurable latency improvement. Rate limiting returns 429 on abuse. You can explain the cache invalidation tradeoffs you made.
+
+Start by asking me: what is the exact failure mode if I forget to evict the circle-members cache when a new user joins a circle? Be specific — what does the affected user see and for how long?</div>
+    </div>
+  </div>
+</div>
+
+<div class="prompt-card" id="p-w12">
+  <div class="prompt-header" onclick="toggle('p-w12')">
+    <span class="prompt-tag pt-m4">M4 · Week 12</span>
+    <span class="prompt-title">Docker + Cloud Deployment</span>
+    <span class="prompt-toggle">▼</span>
+  </div>
+  <div class="prompt-body">
+    <div class="prompt-meta">Focus: Dockerfile (multi-stage), docker-compose (API + PostgreSQL + Redis), Railway deployment, Vercel frontend deploy, environment variables</div>
+    <div class="prompt-text-wrap">
+      <button class="copy-btn" onclick="copyPrompt('t-w12')">Copy</button>
+      <div class="prompt-text" id="t-w12">I'm in Week 12 of building PaceCircle — containerizing and deploying. Nudges only — no answers upfront.
+
+## Who I am
+SWE2 at Bank of America. CS + Info Science grad UNC. Weeks 1-11 complete.
+
+## PaceCircle
+Complete web fitness calendar app. Backend: Java 21, Spring Boot 3.x, PostgreSQL, Redis. Frontend: React + TypeScript (Vite).
+
+## This week's goals
+1. Write a multi-stage Dockerfile for the Spring Boot backend (Stage 1: Maven build, Stage 2: slim JRE runtime)
+2. Write docker-compose.yml: three services — api, db (postgres:18), redis (redis:alpine) — api depends_on db and redis
+3. Test locally: docker-compose up starts the full stack, frontend connects to it
+4. Deploy backend to Railway: connect GitHub repo, configure managed PostgreSQL, set environment variables
+5. Deploy frontend to Vercel: connect GitHub repo, set VITE_API_BASE_URL to the Railway backend URL
+6. Configure all secrets as environment variables: JWT_SECRET, DATABASE_URL, REDIS_URL — never hardcoded
+
+## Key concepts
+- Multi-stage Dockerfile: Stage 1 uses maven:3.9-eclipse-temurin-21 to run mvn package. Stage 2 uses eclipse-temurin:21-jre-alpine (tiny, no Maven, no source code) and copies only the JAR from Stage 1. Final image is ~200MB instead of ~600MB.
+- docker-compose depends_on: tells Docker to start db and redis before api. But depends_on only waits for the container to START, not for PostgreSQL to be READY. Add a healthcheck or use spring.datasource.hikari.initialization-fail-timeout to handle DB not-yet-ready gracefully.
+- Environment variables in Spring Boot: use ${VARIABLE_NAME} in application.properties and set real values as environment variables on the deployment platform. Never commit secrets to git.
+- Railway: connect your GitHub repo, select the branch, it detects the Dockerfile automatically. Add a managed PostgreSQL plugin — Railway gives you a DATABASE_URL env var. Set your other env vars in the Railway dashboard.
+- Vercel: connect GitHub repo for the frontend. Set VITE_API_BASE_URL = your Railway backend URL. Vercel auto-deploys on every push to main. Your React app uses import.meta.env.VITE_API_BASE_URL to know where to call.
+
+## Resources
+- Docker docs: docs.docker.com/get-started/02_our_app (Dockerfile basics)
+- Baeldung: "Dockerizing a Spring Boot Application", "Docker Compose with Spring Boot"
+- Railway docs: docs.railway.app
+- Vercel docs: vercel.com/docs/frameworks/vite
+
+## Week 12 / Module 4 milestone
+docker-compose up starts entire stack locally. Backend deployed on Railway with public URL. Frontend deployed on Vercel pointing to Railway. PaceCircle is live on the internet.
+
+Start by asking me why we use a multi-stage Docker build and what the specific problem is with putting Maven in the production image. What would the consequences be?</div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<!-- ── MODULE 5 ── -->
+<div class="section-label"><span class="section-num">06</span><h2>Module 5 — Polish, Email &amp; Beta Launch (Weeks 13–14)</h2><div class="line"></div></div>
+<div class="prompts-wrap">
+
+<div class="prompt-card" id="p-w13">
+  <div class="prompt-header" onclick="toggle('p-w13')">
+    <span class="prompt-tag pt-m5">M5 · Week 13</span>
+    <span class="prompt-title">Email Notifications + Frontend Polish</span>
+    <span class="prompt-toggle">▼</span>
+  </div>
+  <div class="prompt-body">
+    <div class="prompt-meta">Focus: transactional email (Resend or SendGrid), email templates, circle invite emails, "someone joined your workout" notifications, frontend error states + loading skeletons</div>
+    <div class="prompt-text-wrap">
+      <button class="copy-btn" onclick="copyPrompt('t-w13')">Copy</button>
+      <div class="prompt-text" id="t-w13">I'm in Week 13 of building PaceCircle — adding email notifications and polishing the frontend. Nudges only.
+
+## Who I am
+SWE2 at Bank of America. CS + Info Science grad UNC. Weeks 1-12 complete. App is deployed and live.
+
+## PaceCircle
+Live web fitness calendar app on Railway + Vercel. All core features working.
+
+## This week's goals
+1. Choose a transactional email provider: Resend (simpler, modern API) or SendGrid (more features, industry standard). Integrate into Spring Boot as an @Async service.
+2. Email: circle invite — when you create a circle and share the link, also send an optional email invitation to an address
+3. Email: "Count me in" notification — when someone RSVPs to your workout, email the event creator: "Alex is joining your Thursday run at 6pm"
+4. Send emails asynchronously (@Async) — never block the HTTP response on email delivery
+5. Frontend polish: add loading skeletons on the calendar, feed, and circles pages (not just spinners)
+6. Frontend: handle error states gracefully — API errors show user-friendly messages, not raw error objects
+7. Frontend: empty states — "No workouts this month. Click a day to add one." and "Your feed is quiet — join a circle to see others' workouts."
+
+## Key concepts
+- Transactional email providers: Resend (resend.com) — clean REST API, excellent DX, generous free tier. SendGrid — industry standard, used by Twilio, more configuration. For PaceCircle, Resend is simpler.
+- Email sending is @Async: POST /api/workout-events/{id}/join returns 201 immediately. The "Count me in" email sends in the background. If the email fails, the RSVP still succeeded — don't roll back the join for an email failure.
+- Email idempotency: if a user clicks "Count me in" twice (network issue), don't send two emails. Check if a WorkoutJoin already exists before sending.
+- Loading skeletons: grey animated placeholder shapes that match the layout of the real content. Better UX than spinners because users understand the page structure before data loads. Build as simple div elements with a shimmer CSS animation.
+- Empty state components: every list view needs one. It's a common junior dev mistake to render nothing when data is empty — the user just sees a blank screen and doesn't know why.
+
+## Resources
+- Resend docs: resend.com/docs — "Getting Started" and "Send Email" sections (very clean)
+- SendGrid docs: docs.sendgrid.com/for-developers/sending-email/api-getting-started
+- Baeldung: "Send Email with Spring" (JavaMailSender approach — also valid if you prefer SMTP)
+- CSS shimmer animation: search "CSS skeleton loading animation" — a 10-line keyframes animation
+
+## Week 13 milestone
+Circle invite email sends when a code is shared. "Count me in" sends an email to the event creator asynchronously. Frontend has loading skeletons and empty states on all list views. No raw error objects ever shown to users.
+
+Start by asking me: should an email send failure roll back the "Count me in" RSVP? Why or why not? Walk me through the user experience implications of both choices before I decide.</div>
+    </div>
+  </div>
+</div>
+
+<div class="prompt-card" id="p-w14">
+  <div class="prompt-header" onclick="toggle('p-w14')">
+    <span class="prompt-tag pt-m5">M5 · Week 14</span>
+    <span class="prompt-title">Beta Launch + User Feedback</span>
+    <span class="prompt-toggle">▼</span>
+  </div>
+  <div class="prompt-body">
+    <div class="prompt-meta">Focus: final QA pass, README + architecture diagram, sharing with beta users, collecting structured feedback, tracking what to fix before App Store</div>
+    <div class="prompt-text-wrap">
+      <button class="copy-btn" onclick="copyPrompt('t-w14')">Copy</button>
+      <div class="prompt-text" id="t-w14">I'm in Week 14 of building PaceCircle — doing a final quality pass and launching the beta. Help me think through what needs to happen before I share this with real users.
+
+## Who I am
+SWE2 at Bank of America. CS + Info Science grad UNC. Weeks 1-13 complete. PaceCircle is live on Railway + Vercel.
+
+## PaceCircle
+Live web fitness calendar app. Users plan workouts, join invite-only circles, see circle members' shared events in a Feed, RSVP with "Count me in" (both sides see who's joining), get email notifications when someone joins their event.
+
+## This week's goals
+1. Full QA pass: every user flow from registration → create circle → share code → friend joins → post workout → friend RSVPs → email arrives
+2. Write a production-quality GitHub README: project description, screenshots, tech stack + why each choice, architecture diagram (Excalidraw), setup instructions, feature list
+3. Architecture diagram: React (Vercel) → Spring Boot (Railway) → PostgreSQL + Redis, with arrows for JWT auth, email (Resend), background jobs
+4. Create a simple feedback form (Google Form or Typeform) and share with beta users alongside the URL
+5. Identify the top 3 things beta feedback will likely surface and think through how you'd fix them
+6. Write down the "done" criteria for the React Native / App Store version — what needs to be true before you start that phase
+
+## For the README / portfolio
+Every technical decision is an interview talking point. Prepare one-sentence explanations for:
+- Why Spring Boot + Java (not Node.js)
+- Why PostgreSQL (not MongoDB)
+- Why JWT (not sessions)
+- Why Redis caching on the feed (not just DB every time)
+- Why @Scheduled background jobs (not on-demand expiry calculation)
+- Why @Async for emails (not synchronous)
+- Why React + Vite (not Next.js)
+- Why Vercel + Railway (not AWS directly)
+
+## Resources
+- Excalidraw: excalidraw.com (free, browser-based architecture diagram tool)
+- github.com/matiassingers/awesome-readme — examples of excellent READMEs
+- Google Forms: forms.google.com (for beta feedback collection)
+
+## Week 14 / Module 5 milestone
+PaceCircle shared with at least 3 real users. GitHub README complete with architecture diagram. You can explain every major technical decision in one clear sentence. Feedback form live and collecting responses.
+
+Help me write the first README section — the one-paragraph project description. Ask me: if I had to explain PaceCircle to someone who had never heard of Strava or Google Calendar, in two sentences, what would I say? Start there and we'll refine it.</div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<!-- ── MODULE 6 ── -->
+<div class="section-label"><span class="section-num">07</span><h2>Module 6 — React Native + App Store (Weeks 15–16)</h2><div class="line"></div></div>
+<div class="prompts-wrap">
+
+<div class="prompt-card" id="p-w15">
+  <div class="prompt-header" onclick="toggle('p-w15')">
+    <span class="prompt-tag pt-m6">M6 · Week 15</span>
+    <span class="prompt-title">React Native — Rebuilding the Frontend for Mobile</span>
+    <span class="prompt-toggle">▼</span>
+  </div>
+  <div class="prompt-body">
+    <div class="prompt-meta">Focus: Expo setup, React Native vs React differences, navigation (tabs + stacks), rebuilding core screens, connecting to the existing backend</div>
+    <div class="prompt-text-wrap">
+      <button class="copy-btn" onclick="copyPrompt('t-w15')">Copy</button>
+      <div class="prompt-text" id="t-w15">I'm in Week 15 of building PaceCircle — rebuilding the frontend as a React Native app for the App Store. My backend is complete and deployed. I know React and TypeScript from building the web version. Help me learn what's different in React Native. Nudges only.
+
+## Who I am
+SWE2 at Bank of America. CS + Info Science grad UNC. Full backend complete (Weeks 1-12). Web frontend complete and in beta (Weeks 13-14). Now building the mobile version.
+
+## PaceCircle
+Fitness calendar app with invite-only circles and "Count me in" RSVPs. Backend: Java 21, Spring Boot 3.x, deployed on Railway. The React Native app will call the SAME backend — no backend changes needed.
+
+## Why React Native now
+Beta test validated the concept with real users. Now building for App Store distribution. React Native because: TypeScript transfers, cross-platform iOS + Android, industry standard at health/fitness startups.
+
+## This week's goals
+1. Create project: npx create-expo-app PaceCircle-mobile --template (TypeScript template)
+2. Run on physical iPhone via Expo Go app
+3. Learn key React Native differences from React web: View/Text/ScrollView instead of div/p, StyleSheet.create() instead of CSS, flexbox only, no browser APIs
+4. Install React Navigation: @react-navigation/native + @react-navigation/bottom-tabs + @react-navigation/stack
+5. Build 4-tab navigator: Calendar, Feed, Circles, Profile
+6. Rebuild Login and Register screens in React Native
+7. Reuse the same Axios instance and React Query hooks from the web version — or adapt them (the API calls are identical)
+8. Display real workout events from the deployed Railway backend on the calendar
+
+## Key concepts
+- React Native vs React: same mental model (components, hooks, state, props) but NO DOM. View replaces div. Text replaces p/span. ScrollView for scrollable content. FlatList for long lists (virtualizes — only renders visible items). StyleSheet.create({}) replaces CSS.
+- Expo Go: a free iPhone/Android app. Scan the QR code from your terminal and your app runs on your real device instantly. No Xcode build during development. You'll need to eject to "bare workflow" later for App Store submission and HealthKit access.
+- React Navigation: the standard navigation library for React Native. Bottom tab navigator for the 4 main tabs. Stack navigator nested inside each tab for detail screens. useNavigation() hook to navigate programmatically.
+- expo-secure-store: encrypted key-value storage on the device. Use this instead of localStorage for the JWT token on mobile. Never use AsyncStorage for tokens — it's not encrypted.
+
+## Resources
+- docs.expo.dev — "Get Started" section, Expo Go setup
+- reactnavigation.org — "Getting Started" and "Tab navigation" guides
+- React Native docs: reactnative.dev/docs/components-and-apis
+- expo.dev/blog — recent posts on Expo Router v3 (the newer navigation approach — worth knowing about)
+
+## Week 15 milestone
+Expo project running on your iPhone. 4-tab navigation. Login and register working. Real workout events from the Railway backend displayed on the mobile calendar.
+
+Start by asking me to name three things that exist in React web that DON'T exist in React Native. Let me reason through the differences before you fill in gaps.</div>
+    </div>
+  </div>
+</div>
+
+<div class="prompt-card" id="p-w16">
+  <div class="prompt-header" onclick="toggle('p-w16')">
+    <span class="prompt-tag pt-m6">M6 · Week 16</span>
+    <span class="prompt-title">App Store Submission + Portfolio Wrap-Up</span>
+    <span class="prompt-toggle">▼</span>
+  </div>
+  <div class="prompt-body">
+    <div class="prompt-meta">Focus: Apple Developer account, TestFlight beta, App Store submission checklist, resume update, interview talking points for the full 16-week story</div>
+    <div class="prompt-text-wrap">
+      <button class="copy-btn" onclick="copyPrompt('t-w16')">Copy</button>
+      <div class="prompt-text" id="t-w16">I'm in Week 16 of building PaceCircle — preparing for App Store submission and wrapping up the portfolio. Help me think through the launch and job application materials. This is also the culmination of a 16-week journey to close a specific gap in my production level technical skills.
+## Who I am
+- CS + Info Science grad, UNC Chapel Hill
+- SWE2 at Bank of America (database modernization, legacy systems, SQL)
+- I can't recognize Spring Actuator and StopWatch in legacy code, and couldn't explain tradeoffs confidently
+- I spent 16 weeks building PaceCircle to close that gap — and now I have a deployed, tested, production-quality application to show for it
+- Target roles: backend-leaning SWE at product companies, ideally health/fitness/consumer tech
+
+## What I built: PaceCircle
+A full-stack fitness calendar app with social circles.
+
+BACKEND (Java Spring Boot — what I built to close the gap):
+- Java 21, Spring Boot 3.x, PostgreSQL, Redis
+- Spring Security + JWT with per-user data isolation
+- @Scheduled background jobs (nightly expiry cleanup, weekly circle deactivation)
+- @Async processing for email notifications (Resend)
+- Redis caching with @Cacheable/@CacheEvict and TTL on hot read endpoints
+- Rate limiting with Bucket4j
+- Spring Actuator + org.springframework.util.StopWatch profiling + SLF4J structured logging
+- JUnit 5 + Mockito unit tests and @SpringBootTest integration tests
+- DTOs + MapStruct, Bean Validation, @ControllerAdvice exception handling
+- Docker + docker-compose, deployed to Railway
+
+FRONTEND (React web + React Native):
+- React + TypeScript + Vite, deployed to Vercel
+- React Query for API state, optimistic updates on "Count me in"
+- React Native + Expo for App Store version
+
+## This week's goals
+1. App Store checklist: Apple Developer account ($99/year), eject Expo to bare workflow, build the production IPA, TestFlight beta first
+2. App Store assets: icon (1024x1024), screenshots for iPhone 6.7" and 6.1", app description, keywords, privacy policy URL (required)
+3. Update resume: add PaceCircle with 4 achievement-oriented bullets
+4. Prepare the "technical gap → built PaceCircle" narrative for behavioral questions
+5. Update README with final screenshots and App Store link
+
+## Key interview talking points to prepare
+- "Why did you build PaceCircle?" → honest answer: identified specific gaps, built to close them
+- "Walk me through your architecture" → React → Spring Boot → PostgreSQL + Redis, explain every component's purpose
+- "Why Java Spring Boot?" → strong ecosystem, industry standard for backend, forced me to learn the Java standard library deeply
+- "Tell me about a time you used caching" → Redis on the circle feed, @Cacheable + @CacheEvict, TTL tradeoffs
+- "What production patterns does your app use?" → StopWatch profiling, Actuator health checks, @Scheduled jobs, @Async emails, structured logging, rate limiting
+
+## Resources
+- Apple Developer: developer.apple.com/programs (enroll in Apple Developer Program)
+- Expo: docs.expo.dev/distribution/app-stores (App Store submission guide)
+- App Store Connect: appstoreconnect.apple.com
+- github.com/matiassingers/awesome-readme (README inspiration)
+
+Help me write 4 strong resume bullet points for PaceCircle. Start by asking me: what is the most technically challenging thing I built, and what was the measurable outcome? I'll describe it and you help me translate it into an achievement-oriented bullet in the format: [Action verb] + [what I did] + [result or technical significance].</div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<!-- ── UTILITY PROMPTS ── -->
+<div class="section-label"><span class="section-num">08</span><h2>Utility Prompts — Use Anytime</h2><div class="line"></div></div>
+<div class="prompts-wrap">
+
+<div class="prompt-card" id="p-debug">
+  <div class="prompt-header" onclick="toggle('p-debug')">
+    <span class="prompt-tag pt-util">Utility</span>
+    <span class="prompt-title">Debugging Session — I'm Stuck</span>
+    <span class="prompt-toggle">▼</span>
+  </div>
+  <div class="prompt-body">
+    <div class="prompt-meta">Use when: a specific bug, error, or unexpected behavior is blocking you. Fill in the bracketed sections before pasting.</div>
+    <div class="prompt-text-wrap">
+      <button class="copy-btn" onclick="copyPrompt('t-debug')">Copy</button>
+      <div class="prompt-text" id="t-debug">I'm building PaceCircle — a Java Spring Boot + React fitness calendar app — and I'm stuck on a specific problem. Help me reason through it. Ask clarifying questions rather than immediately giving me the answer.
+
+## Project context
+PaceCircle: web fitness calendar app. Users plan workouts on a personal calendar, belong to invite-only circles, share workouts with circles, RSVP with "Count me in." Both creator and joiners see each other's names. RSVPs auto-expire when the event time passes.
+Backend: Java 21, Spring Boot 3.x, PostgreSQL, Spring Security + JWT, Redis.
+Frontend: React + TypeScript + Vite (web), React Native + Expo (mobile, later).
+
+## Who I am
+SWE2 at Bank of America. CS + Info Science grad UNC. Common mistakes: Python habits (self vs this, append vs add, == vs .equals(), .length vs .size(), Optional<Double> not Optional<double>).
+
+## What I'm working on
+[DESCRIBE: which module and week you're in, and what feature you were building]
+
+## What's already working
+[DESCRIBE: what was working before this problem started]
+
+## The problem
+[DESCRIBE: what you were trying to do, what you expected, what actually happened]
+
+## The error or unexpected behavior
+[PASTE: full error message, stack trace, or description of wrong behavior]
+
+## What I've tried
+[DESCRIBE: at least 2-3 things you already attempted]
+
+## Relevant code
+[PASTE: only the relevant classes or methods — not the whole project]
+
+Please start with one clarifying question. I want to understand the root cause, not just patch the symptom.</div>
+    </div>
+  </div>
+</div>
+
+<div class="prompt-card" id="p-concept">
+  <div class="prompt-header" onclick="toggle('p-concept')">
+    <span class="prompt-tag pt-util">Utility</span>
+    <span class="prompt-title">Concept Deep Dive — I Don't Understand This</span>
+    <span class="prompt-toggle">▼</span>
+  </div>
+  <div class="prompt-body">
+    <div class="prompt-meta">Use when: you encountered a class, annotation, pattern, or concept you don't recognize and want to truly understand it before moving on</div>
+    <div class="prompt-text-wrap">
+      <button class="copy-btn" onclick="copyPrompt('t-concept')">Copy</button>
+      <div class="prompt-text" id="t-concept">I'm building PaceCircle — a Java Spring Boot + React fitness calendar app — and I encountered something I don't understand. Please teach me this concept properly: what it is, what problem it solves, when to use it, and the most common mistake. Then quiz me to verify I understood.
+
+## Project context
+PaceCircle: web fitness calendar app with invite-only circles and "Count me in" RSVPs.
+Backend: Java 21, Spring Boot 3.x, PostgreSQL, Spring Security + JWT, Redis.
+Frontend: React + TypeScript + Vite (web), React Native + Expo (mobile, later).
+
+## Who I am
+SWE2 at Bank of America. CS + Info Science grad UNC. Building this to close production Java gaps. I prefer to reason through things with nudges — only give me direct answers for truly new concepts.
+
+## The concept I don't understand
+[FILL IN: paste the class name, annotation, method, or concept — e.g. "org.springframework.util.StopWatch", "@Transactional(propagation = Propagation.REQUIRES_NEW)", "CompletableFuture.thenCompose()", "FetchType.LAZY and the N+1 problem", "OAuth2 refresh token rotation", "React Query's staleTime vs cacheTime"]
+
+## My best guess at what it means
+[FILL IN: write your guess even if uncertain — this helps calibrate the explanation]
+
+## Where I encountered it
+[FILL IN: in code, in docs, in an error message? What was the surrounding context?]
+
+Please:
+1. Explain what it is and what problem it solves (no assumed context)
+2. Show me a concrete PaceCircle example of when I would use it
+3. Name the most common mistake developers make with it
+4. Ask me 2-3 questions to verify I understood — don't accept vague answers</div>
+    </div>
+  </div>
+</div>
+
+<div class="prompt-card" id="p-review">
+  <div class="prompt-header" onclick="toggle('p-review')">
+    <span class="prompt-tag pt-util">Utility</span>
+    <span class="prompt-title">Code Review — Assess My Work Strictly</span>
+    <span class="prompt-toggle">▼</span>
+  </div>
+  <div class="prompt-body">
+    <div class="prompt-meta">Use when: you've finished a week's milestone and want honest feedback before moving on. Paste the code and specify what you want reviewed.</div>
+    <div class="prompt-text-wrap">
+      <button class="copy-btn" onclick="copyPrompt('t-review')">Copy</button>
+      <div class="prompt-text" id="t-review">I've completed work on PaceCircle and want an honest, strict code review. Flag every issue, anti-pattern, and gap. I'd rather know the problems now than discover them in an interview or in production.
+
+## Project context
+PaceCircle: web fitness calendar app with invite-only circles and "Count me in" RSVPs. Both creator and all joiners see each other's names on the RSVP list. RSVPs auto-expire when the event time passes.
+Backend: Java 21, Spring Boot 3.x, PostgreSQL, Spring Security + JWT, Redis.
+Frontend: React + TypeScript + Vite (web).
+
+## Who I am
+SWE2 at Bank of America. CS + Info Science grad UNC. I want strict assessment — flag incorrect statements, not just praise.
+
+## What I just built
+[DESCRIBE: what you implemented — which endpoints, components, or features]
+
+## The code to review
+[PASTE: full relevant classes — not just a method. Label each file clearly.]
+
+## Specific concerns
+[DESCRIBE: anything you're uncertain about — a design decision, a pattern you copied without fully understanding, a section that felt hacky]
+
+Please score each area 1-5 and be honest:
+1. Correctness — does it do what I think? Any bugs?
+2. Java/Spring best practices — following conventions?
+3. Architecture — business logic in the right layer? Concerns separated?
+4. Performance — N+1 queries? Unnecessary DB calls? Missing indexes?
+5. Security — any data accessible by the wrong user?
+6. Test coverage — what edge cases am I missing?
+
+End with: the ONE most important thing to fix before I move to the next week.</div>
+    </div>
+  </div>
+</div>
+
+<div class="prompt-card" id="p-interview">
+  <div class="prompt-header" onclick="toggle('p-interview')">
+    <span class="prompt-tag pt-util">Utility</span>
+    <span class="prompt-title">Interview Prep — PaceCircle as a Technical Story</span>
+    <span class="prompt-toggle">▼</span>
+  </div>
+  <div class="prompt-body">
+    <div class="prompt-meta">Use when: preparing for a technical interview and want to practice explaining your project decisions out loud</div>
+    <div class="prompt-text-wrap">
+      <button class="copy-btn" onclick="copyPrompt('t-interview')">Copy</button>
+      <div class="prompt-text" id="t-interview">I'm preparing for a backend engineering interview and want to practice explaining my PaceCircle project. Please ask me technical questions about it and push back if my answers are vague or incomplete. This is a mock technical interview — treat it like one.
+
+## PaceCircle — what I built
+A full-stack fitness calendar web app with social circles. Users plan workouts, belong to invite-only circles (shared via join code), share workouts with those circles, and RSVP with "Count me in." Both creator and all joiners see each other's names. RSVPs auto-expire when the event time passes.
+
+BACKEND: Java 21, Spring Boot 3.x, PostgreSQL, Redis, Spring Security + JWT
+- org.springframework.util.StopWatch profiling on service methods
+- Spring Actuator (/actuator/health, /actuator/metrics)
+- SLF4J structured logging at correct levels
+- JUnit 5 + Mockito unit tests and @SpringBootTest integration tests
+- DTOs + MapStruct, Bean Validation, @ControllerAdvice
+- @Scheduled nightly expiry cleanup and weekly circle deactivation jobs
+- @Async email notifications (Resend) — returns 202 immediately
+- Redis caching with @Cacheable/@CacheEvict and 24hr TTL on circle feed
+- Rate limiting with Bucket4j (100 req/min per user on feed)
+- Spring Security JWT filter chain, per-user data isolation
+- Dockerfile (multi-stage), docker-compose (API + PostgreSQL + Redis)
+- Deployed on Railway (backend) + Vercel (frontend)
+
+FRONTEND: React + TypeScript + Vite + React Query
+- Optimistic updates on "Count me in" button
+- React Router v6 with protected routes
+- Loading skeletons and empty states on all list views
+- CORS configured between Vercel frontend and Railway backend
+
+## The story behind it
+I noticed that I was lacking in production level technical experience when I didn't recognize Spring Actuator and StopWatch in legacy Java code and couldn't explain tradeoffs confidently. I identified the specific gaps and spent 16 weeks building PaceCircle to close them.
+
+## Interview mode instructions
+- Ask me one technical question at a time
+- If my answer is vague, say "can you be more specific?" and wait
+- If I say something incorrect, flag it directly — don't let it pass
+- After 4-5 questions, give me a brief assessment of how I did and what to study more
+
+Start with: "Walk me through your PaceCircle architecture. I want to understand every component and why you chose it."</div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<footer>PACECIRCLE PROMPT LIBRARY · VICKI YE · 16 WEEKS · 2026</footer>
+
+<script>
+  function toggle(id) {
+    document.getElementById(id).classList.toggle('open');
+  }
+  function copyPrompt(textId) {
+    const text = document.getElementById(textId).innerText;
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = document.querySelector(`button[onclick="copyPrompt('${textId}')"]`);
+      btn.textContent = 'Copied ✓';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+    });
+  }
+</script>
+</body>
+</html>
