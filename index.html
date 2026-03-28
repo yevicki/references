@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>References — Yevicki</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0e0f11;
+      --surface:   #16181c;
+      --surface2:  #1e2026;
+      --border:    rgba(255,255,255,0.07);
+      --border2:   rgba(255,255,255,0.13);
+      --text:      #e8e6e0;
+      --muted:     #7a7870;
+      --faint:     #3a3832;
+
+      --teal:      #3ecfb2;
+      --teal-dim:  rgba(62,207,178,0.12);
+      --teal-glow: rgba(62,207,178,0.25);
+      --amber:     #f5a623;
+      --amber-dim: rgba(245,166,35,0.12);
+      --rose:      #e8637a;
+      --rose-dim:  rgba(232,99,122,0.12);
+
+      --font-display: 'DM Serif Display', serif;
+      --font-body:    'Outfit', sans-serif;
+      --font-mono:    'DM Mono', monospace;
+
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      font-weight: 300;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Background grid ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      top: -200px; left: 50%;
+      transform: translateX(-50%);
+      width: 700px; height: 500px;
+      background: radial-gradient(ellipse, rgba(62,207,178,0.08) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── Layout ── */
+    .page { position: relative; z-index: 1; max-width: 860px; margin: 0 auto; padding: 0 24px 80px; }
+
+    /* ── Header ── */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 28px 0 60px;
+    }
+
+    .logo {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+      text-decoration: none;
+    }
+    .logo span { color: var(--teal); }
+
+    .header-tag {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--muted);
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: 20px;
+      padding: 4px 12px;
+      letter-spacing: 0.06em;
+    }
+
+    /* ── Hero ── */
+    .hero { padding-bottom: 56px; }
+
+    .hero-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--teal);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .hero-eyebrow::before {
+      content: '';
+      display: inline-block;
+      width: 24px; height: 1px;
+      background: var(--teal);
+    }
+
+    .hero h1 {
+      font-family: var(--font-display);
+      font-size: clamp(36px, 6vw, 58px);
+      font-weight: 400;
+      line-height: 1.12;
+      color: var(--text);
+      margin-bottom: 18px;
+    }
+
+    .hero h1 em {
+      font-style: italic;
+      color: var(--teal);
+    }
+
+    .hero-sub {
+      font-size: 16px;
+      color: var(--muted);
+      font-weight: 300;
+      line-height: 1.6;
+      max-width: 440px;
+    }
+
+    /* ── Search ── */
+    .search-wrap {
+      margin-bottom: 52px;
+      position: relative;
+    }
+    .search-icon {
+      position: absolute;
+      left: 16px; top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      font-size: 15px;
+      pointer-events: none;
+    }
+    input[type="search"] {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: var(--radius-md);
+      padding: 14px 16px 14px 44px;
+      font-family: var(--font-body);
+      font-size: 15px;
+      font-weight: 300;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      -webkit-appearance: none;
+    }
+    input[type="search"]::placeholder { color: var(--muted); }
+    input[type="search"]:focus {
+      border-color: var(--teal);
+      box-shadow: 0 0 0 3px var(--teal-glow);
+    }
+
+    /* ── Section label ── */
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .section-label {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .section-line {
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ── Card grid ── */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 16px;
+      margin-bottom: 52px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px 24px 20px;
+      text-decoration: none;
+      display: block;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+      cursor: pointer;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transition: opacity 0.3s;
+      border-radius: inherit;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+    }
+
+    /* Card accent colors */
+    .card.teal { border-color: rgba(62,207,178,0.2); }
+    .card.teal::before { background: radial-gradient(ellipse at top left, var(--teal-dim), transparent 70%); }
+    .card.teal:hover { border-color: rgba(62,207,178,0.45); box-shadow: 0 12px 40px rgba(62,207,178,0.08); }
+    .card.teal:hover::before { opacity: 1; }
+
+    .card.amber { border-color: rgba(245,166,35,0.2); }
+    .card.amber::before { background: radial-gradient(ellipse at top left, var(--amber-dim), transparent 70%); }
+    .card.amber:hover { border-color: rgba(245,166,35,0.45); box-shadow: 0 12px 40px rgba(245,166,35,0.08); }
+    .card.amber:hover::before { opacity: 1; }
+
+    .card.rose { border-color: rgba(232,99,122,0.2); }
+    .card.rose::before { background: radial-gradient(ellipse at top left, var(--rose-dim), transparent 70%); }
+    .card.rose:hover { border-color: rgba(232,99,122,0.45); box-shadow: 0 12px 40px rgba(232,99,122,0.08); }
+    .card.rose:hover::before { opacity: 1; }
+
+    /* Card inner */
+    .card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .card-badge {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 20px;
+      border: 1px solid;
+    }
+    .badge-teal  { color: var(--teal);  border-color: rgba(62,207,178,0.35);  background: var(--teal-dim); }
+    .badge-amber { color: var(--amber); border-color: rgba(245,166,35,0.35);  background: var(--amber-dim); }
+    .badge-rose  { color: var(--rose);  border-color: rgba(232,99,122,0.35);  background: var(--rose-dim); }
+
+    .card-arrow {
+      color: var(--faint);
+      font-size: 18px;
+      transition: color 0.2s, transform 0.2s;
+      line-height: 1;
+    }
+    .card:hover .card-arrow { color: var(--muted); transform: translate(2px, -2px); }
+
+    .card-icon {
+      font-size: 28px;
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    .card h2 {
+      font-family: var(--font-display);
+      font-size: 22px;
+      font-weight: 400;
+      color: var(--text);
+      margin-bottom: 8px;
+      line-height: 1.2;
+    }
+
+    .card p {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.6;
+      font-weight: 300;
+    }
+
+    .card-meta {
+      margin-top: 18px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .card-meta-label {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--faint);
+      letter-spacing: 0.06em;
+    }
+
+    .card-meta-label span {
+      color: var(--muted);
+    }
+
+    /* ── "Add more" placeholder card ── */
+    .card-add {
+      border-style: dashed;
+      border-color: var(--faint);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      min-height: 180px;
+      gap: 8px;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .card-add:hover { border-color: var(--muted); background: var(--surface2); }
+    .card-add-plus { font-size: 24px; color: var(--faint); }
+    .card-add p { font-size: 13px; color: var(--faint); font-family: var(--font-mono); }
+
+    /* ── Footer ── */
+    footer {
+      padding-top: 40px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .footer-text {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--faint);
+      letter-spacing: 0.04em;
+    }
+    .footer-text a { color: var(--muted); text-decoration: none; }
+    .footer-text a:hover { color: var(--teal); }
+
+    /* ── Hidden (search filter) ── */
+    .card-wrap[data-hidden="true"] { display: none; }
+
+    /* ── Animations ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero        { animation: fadeUp 0.5s ease both; }
+    .search-wrap { animation: fadeUp 0.5s 0.1s ease both; }
+    .section-header { animation: fadeUp 0.5s 0.15s ease both; }
+    .card-grid   { animation: fadeUp 0.5s 0.2s ease both; }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <header>
+    <a class="logo" href="https://yevicki.github.io"><span>~</span>/yevicki</a>
+    <span class="header-tag">references v1.0</span>
+  </header>
+
+  <section class="hero">
+    <div class="hero-eyebrow">Personal knowledge base</div>
+    <h1>Quick<br><em>reference</em> hub.</h1>
+    <p class="hero-sub">Guides, curriculum, and prompt libraries — built for fast lookup on any device.</p>
+  </section>
+
+  <div class="search-wrap">
+    <span class="search-icon">⌕</span>
+    <input type="search" placeholder="Search guides, curriculum, prompts…" id="search" oninput="filterCards(this.value)" />
+  </div>
+
+  <!-- CURRICULUM -->
+  <div class="section-header">
+    <span class="section-label">Curriculum</span>
+    <span class="section-line"></span>
+  </div>
+
+  <div class="card-grid">
+
+    <div class="card-wrap" data-tags="curriculum pace-circle app build">
+      <a class="card teal" href="curriculum/pace-circle-curriculum.html">
+        <div class="card-top">
+          <span class="card-badge badge-teal">Curriculum</span>
+          <span class="card-arrow">↗</span>
+        </div>
+        <span class="card-icon">🎯</span>
+        <h2>Pace Circle</h2>
+        <p>Step-by-step build guide for the Pace Circle app — architecture, phases, and learning milestones.</p>
+        <div class="card-meta">
+          <span class="card-meta-label">File: <span>curriculum/pace-circle-curriculum.html</span></span>
+        </div>
+      </a>
+    </div>
+
+    <div class="card-wrap" data-tags="add new curriculum">
+      <div class="card card-add" onclick="alert('Add your next curriculum file to the /curriculum folder, then copy a card block in index.html to link to it.')">
+        <span class="card-add-plus">＋</span>
+        <p>Add curriculum</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- PROMPTS -->
+  <div class="section-header">
+    <span class="section-label">Prompt guides</span>
+    <span class="section-line"></span>
+  </div>
+
+  <div class="card-grid">
+
+    <div class="card-wrap" data-tags="prompts claude ai pace-circle build">
+      <a class="card amber" href="prompts/pace-circle-prompts.html">
+        <div class="card-top">
+          <span class="card-badge badge-amber">Prompt guide</span>
+          <span class="card-arrow">↗</span>
+        </div>
+        <span class="card-icon">💬</span>
+        <h2>Claude Prompts</h2>
+        <p>Prompt library for building Pace Circle with Claude — structured requests, context starters, and debugging prompts.</p>
+        <div class="card-meta">
+          <span class="card-meta-label">File: <span>prompts/pace-circle-prompts.html</span></span>
+        </div>
+      </a>
+    </div>
+
+    <div class="card-wrap" data-tags="add new prompts">
+      <div class="card card-add" onclick="alert('Add your next prompt file to the /prompts folder, then copy a card block in index.html to link to it.')">
+        <span class="card-add-plus">＋</span>
+        <p>Add prompt guide</p>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    <span class="footer-text">
+      <a href="https://yevicki.github.io">yevicki.github.io</a> · /references
+    </span>
+    <span class="footer-text">Updated March 2026</span>
+  </footer>
+
+</div>
+
+<script>
+  function filterCards(query) {
+    const q = query.toLowerCase().trim();
+    document.querySelectorAll('.card-wrap').forEach(wrap => {
+      if (!q) { wrap.dataset.hidden = 'false'; return; }
+      const tags = wrap.dataset.tags || '';
+      const text = wrap.innerText.toLowerCase();
+      wrap.dataset.hidden = (tags.includes(q) || text.includes(q)) ? 'false' : 'true';
+    });
+  }
+
+  // Keyboard shortcut: / to focus search
+  document.addEventListener('keydown', e => {
+    if (e.key === '/' && document.activeElement.tagName !== 'INPUT') {
+      e.preventDefault();
+      document.getElementById('search').focus();
+    }
+  });
+</script>
+
+</body>
+</html>
