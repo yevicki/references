@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Backend Engineering Curriculum — PaceCircle</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #080b08;
+    --surface: #0d110d;
+    --card: #131813;
+    --border: #1c241c;
+    --text: #eef2ee;
+    --muted: #566056;
+    --muted2: #36463a;
+    --green: #00e5a0;
+    --green-dim: rgba(0,229,160,0.09);
+    --green-bright: rgba(0,229,160,0.18);
+    --blue: #4d9fff;
+    --blue-dim: rgba(77,159,255,0.09);
+    --amber: #ffb830;
+    --amber-dim: rgba(255,184,48,0.09);
+    --red: #ff5c5c;
+    --red-dim: rgba(255,92,92,0.08);
+    --purple: #b388ff;
+    --purple-dim: rgba(179,136,255,0.08);
+    --teal: #26d4d4;
+    --teal-dim: rgba(38,212,212,0.09);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 40px 20px 100px;
+    background-image:
+      linear-gradient(rgba(0,229,160,0.015) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,229,160,0.015) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
+  .header { max-width: 980px; margin: 0 auto 52px; }
+  .header-eyebrow {
+    font-family: 'DM Mono', monospace; font-size: 10px;
+    letter-spacing: 0.24em; color: var(--green); text-transform: uppercase;
+    margin-bottom: 14px; display: flex; align-items: center; gap: 12px;
+  }
+  .header-eyebrow::after { content: ''; flex: 0 0 48px; height: 1px; background: var(--green); opacity: 0.35; }
+  .header h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(54px, 10vw, 100px);
+    line-height: 0.88; letter-spacing: 0.01em; color: var(--text);
+  }
+  .header h1 .accent { color: var(--green); }
+  .header h1 .dim { color: var(--muted); }
+  .header-desc { font-size: 13.5px; color: var(--muted); max-width: 640px; line-height: 1.7; margin-top: 18px; }
+  .header-desc strong { color: var(--text); font-weight: 500; }
+  .stat-strip { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 22px; }
+  .stat {
+    font-family: 'DM Mono', monospace; font-size: 10px;
+    letter-spacing: 0.07em; padding: 4px 12px;
+    border-radius: 20px; border: 1px solid; white-space: nowrap;
+  }
+  .stat-g  { color: var(--green);  border-color: rgba(0,229,160,0.35);  background: var(--green-dim); }
+  .stat-b  { color: var(--blue);   border-color: rgba(77,159,255,0.35); background: var(--blue-dim); }
+  .stat-a  { color: var(--amber);  border-color: rgba(255,184,48,0.35); background: var(--amber-dim); }
+  .stat-t  { color: var(--teal);   border-color: rgba(38,212,212,0.35); background: var(--teal-dim); }
+  .stat-p  { color: var(--purple); border-color: rgba(179,136,255,0.35);background: var(--purple-dim); }
+  .stack-wrap { max-width: 980px; margin: 0 auto 52px; }
+  .stack-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  @media(max-width:680px){ .stack-grid { grid-template-columns: 1fr; } }
+  .stack-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; }
+  .stack-card-label { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 10px; }
+  .stack-card-title { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 0.04em; margin-bottom: 8px; }
+  .stack-items { display: flex; flex-direction: column; gap: 5px; }
+  .stack-item { font-size: 12px; color: #bbb; display: flex; align-items: flex-start; gap: 8px; line-height: 1.5; }
+  .stack-item-dot { width: 4px; height: 4px; border-radius: 50%; flex-shrink: 0; margin-top: 6px; }
+  .sc-backend .stack-card-label { color: var(--green); }
+  .sc-backend .stack-card-title { color: var(--green); }
+  .sc-backend .stack-item-dot  { background: var(--green); }
+  .sc-backend { border-top: 2px solid var(--green); }
+  .sc-frontend .stack-card-label { color: var(--blue); }
+  .sc-frontend .stack-card-title { color: var(--blue); }
+  .sc-frontend .stack-item-dot  { background: var(--blue); }
+  .sc-frontend { border-top: 2px solid var(--blue); }
+  .sc-mobile .stack-card-label { color: var(--amber); }
+  .sc-mobile .stack-card-title { color: var(--amber); }
+  .sc-mobile .stack-item-dot  { background: var(--amber); }
+  .sc-mobile { border-top: 2px solid var(--amber); }
+  .project-banner {
+    max-width: 980px; margin: 0 auto 52px;
+    background: var(--card); border: 1px solid rgba(0,229,160,0.2);
+    border-left: 3px solid var(--green);
+    border-radius: 0 10px 10px 0; padding: 22px 26px;
+  }
+  .project-banner-eyebrow { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--green); margin-bottom: 10px; }
+  .project-banner h2 { font-family: 'Bebas Neue', sans-serif; font-size: 32px; letter-spacing: 0.04em; color: var(--text); margin-bottom: 8px; }
+  .project-banner p { font-size: 13px; color: #bbb; line-height: 1.7; max-width: 720px; }
+  .feature-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 16px; }
+  @media(max-width:560px){ .feature-grid { grid-template-columns: 1fr; } }
+  .feature-item { background: var(--surface); border-radius: 7px; padding: 10px 14px; display: flex; gap: 10px; align-items: flex-start; border-left: 2px solid var(--border); }
+  .feature-item.f-green  { border-color: var(--green); }
+  .feature-item.f-blue   { border-color: var(--blue); }
+  .feature-item.f-amber  { border-color: var(--amber); }
+  .feature-item.f-purple { border-color: var(--purple); }
+  .feature-item.f-teal   { border-color: var(--teal); }
+  .feature-item.f-red    { border-color: var(--red); }
+  .feature-icon { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+  .feature-text { font-size: 12.5px; color: #ccc; line-height: 1.55; }
+  .feature-text strong { color: var(--text); }
+  .section-label { max-width: 980px; margin: 0 auto 20px; display: flex; align-items: center; gap: 12px; }
+  .section-label h2 { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 0.06em; white-space: nowrap; }
+  .section-label .line { flex: 1; height: 1px; background: var(--border); }
+  .section-num { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); letter-spacing: 0.12em; }
+  .modules-wrap { max-width: 980px; margin: 0 auto 60px; display: flex; flex-direction: column; gap: 16px; }
+  .module-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+  .module-card.open .module-body { display: block; }
+  .module-card:not(.open) .module-body { display: none; }
+  .module-header { display: flex; align-items: center; gap: 16px; padding: 20px 24px; cursor: pointer; border-bottom: 1px solid var(--border); transition: background 0.15s; user-select: none; }
+  .module-header:hover { background: rgba(255,255,255,0.02); }
+  .module-num { font-family: 'Bebas Neue', sans-serif; font-size: 42px; line-height: 1; min-width: 54px; text-align: center; letter-spacing: 0.02em; }
+  .mn-1 { color: var(--green); } .mn-2 { color: var(--blue); } .mn-3 { color: var(--amber); }
+  .mn-4 { color: var(--teal); } .mn-5 { color: var(--purple); } .mn-6 { color: var(--red); }
+  .module-header-main { flex: 1; }
+  .module-eyebrow { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 4px; }
+  .me-1 { color: var(--green); } .me-2 { color: var(--blue); } .me-3 { color: var(--amber); }
+  .me-4 { color: var(--teal); } .me-5 { color: var(--purple); } .me-6 { color: var(--red); }
+  .module-title { font-family: 'Bebas Neue', sans-serif; font-size: 30px; letter-spacing: 0.03em; line-height: 1; }
+  .module-meta { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; margin-top: 6px; }
+  .module-toggle { font-size: 14px; color: var(--muted); transition: transform 0.2s; margin-left: 8px; flex-shrink: 0; }
+  .module-card.open .module-toggle { transform: rotate(180deg); }
+  .module-body { padding: 0; }
+  .week-block { border-bottom: 1px solid var(--border); padding: 20px 24px; }
+  .week-block:last-child { border-bottom: none; }
+  .week-header { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+  .week-badge { font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 4px 11px; border-radius: 4px; }
+  .week-title { font-size: 15px; font-weight: 600; color: var(--text); flex: 1; }
+  .week-hours { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); white-space: nowrap; padding-top: 1px; }
+  .day-schedule { display: flex; flex-direction: column; gap: 6px; }
+  .day-row { display: grid; grid-template-columns: 100px 1fr; gap: 10px; align-items: flex-start; padding: 8px 12px; background: var(--surface); border-radius: 6px; }
+  .day-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; padding-top: 2px; color: var(--muted); }
+  .day-tasks { display: flex; flex-direction: column; gap: 3px; }
+  .day-task { font-size: 12.5px; color: #ccc; line-height: 1.55; display: flex; gap: 8px; align-items: flex-start; }
+  .dt-dot { width: 4px; height: 4px; border-radius: 50%; flex-shrink: 0; margin-top: 6px; }
+  .day-task strong { color: var(--text); }
+  .day-task code { font-family: 'DM Mono', monospace; font-size: 11px; background: rgba(255,255,255,0.07); padding: 1px 5px; border-radius: 3px; color: var(--green); }
+  .concepts { margin-top: 12px; display: flex; flex-direction: column; gap: 6px; }
+  .concept { background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 10px 14px; display: grid; grid-template-columns: 160px 1fr; gap: 12px; align-items: start; }
+  .concept-term { font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 500; padding-top: 1px; line-height: 1.4; }
+  .concept-desc { font-size: 12.5px; color: #bbb; line-height: 1.6; }
+  .concept-desc strong { color: var(--text); }
+  .concept-desc code { font-family: 'DM Mono', monospace; font-size: 11px; background: rgba(255,255,255,0.07); padding: 1px 5px; border-radius: 3px; color: var(--amber); }
+  .milestone { margin-top: 14px; padding: 14px 16px; border-radius: 7px; border-left: 3px solid; }
+  .milestone-label { font-family: 'DM Mono', monospace; font-size: 9px; text-transform: uppercase; letter-spacing: 0.18em; font-weight: 700; margin-bottom: 6px; }
+  .milestone-text { font-size: 12.5px; color: #bbb; line-height: 1.65; }
+  .milestone-text strong { color: var(--text); }
+  .ms-green  { border-color: var(--green);  background: var(--green-dim);  } .ms-green  .milestone-label { color: var(--green); }
+  .ms-blue   { border-color: var(--blue);   background: var(--blue-dim);   } .ms-blue   .milestone-label { color: var(--blue); }
+  .ms-amber  { border-color: var(--amber);  background: var(--amber-dim);  } .ms-amber  .milestone-label { color: var(--amber); }
+  .ms-teal   { border-color: var(--teal);   background: var(--teal-dim);   } .ms-teal   .milestone-label { color: var(--teal); }
+  .ms-purple { border-color: var(--purple); background: var(--purple-dim); } .ms-purple .milestone-label { color: var(--purple); }
+  .ms-red    { border-color: var(--red);    background: var(--red-dim);    } .ms-red    .milestone-label { color: var(--red); }
+  .resources { display: flex; flex-direction: column; gap: 5px; margin-top: 10px; }
+  .resource-row { display: flex; gap: 8px; align-items: flex-start; font-size: 12px; color: #bbb; padding: 5px 0; border-bottom: 1px solid var(--border); }
+  .resource-row:last-child { border-bottom: none; }
+  .resource-type { font-family: 'DM Mono', monospace; font-size: 9px; text-transform: uppercase; letter-spacing: 0.1em; padding: 2px 7px; border-radius: 3px; white-space: nowrap; flex-shrink: 0; margin-top: 1px; }
+  .rt-read   { background: var(--green-dim);  color: var(--green);  border: 1px solid rgba(0,229,160,0.2); }
+  .rt-watch  { background: var(--blue-dim);   color: var(--blue);   border: 1px solid rgba(77,159,255,0.2); }
+  .rt-docs   { background: var(--amber-dim);  color: var(--amber);  border: 1px solid rgba(255,184,48,0.2); }
+  .rt-build  { background: var(--teal-dim);   color: var(--teal);   border: 1px solid rgba(38,212,212,0.2); }
+  .rt-practice { background: var(--purple-dim); color: var(--purple); border: 1px solid rgba(179,136,255,0.2); }
+  .resource-row a { color: var(--teal); text-decoration: none; border-bottom: 1px solid rgba(38,212,212,0.3); }
+  .divider { max-width: 980px; margin: 0 auto 20px; height: 1px; background: var(--border); }
+  .wb-1 .week-badge { background: var(--green-dim);  color: var(--green);  border: 1px solid rgba(0,229,160,0.25); }
+  .wb-2 { background: rgba(0,229,160,0.02); } .wb-2 .week-badge { background: rgba(0,229,160,0.05); color: var(--green); border: 1px solid rgba(0,229,160,0.15); }
+  .wb-3 .week-badge { background: rgba(0,229,160,0.03); color: var(--green); border: 1px solid rgba(0,229,160,0.12); }
+  .wb-blue .week-badge { background: var(--blue-dim); color: var(--blue); border: 1px solid rgba(77,159,255,0.25); }
+  .wb-amber .week-badge { background: var(--amber-dim); color: var(--amber); border: 1px solid rgba(255,184,48,0.25); }
+  .wb-teal .week-badge { background: var(--teal-dim); color: var(--teal); border: 1px solid rgba(38,212,212,0.25); }
+  .wb-purple .week-badge { background: var(--purple-dim); color: var(--purple); border: 1px solid rgba(179,136,255,0.25); }
+  .wb-red .week-badge { background: var(--red-dim); color: var(--red); border: 1px solid rgba(255,92,92,0.25); }
+  .d-green { background: var(--green); } .d-blue { background: var(--blue); } .d-amber { background: var(--amber); }
+  .d-teal { background: var(--teal); } .d-purple { background: var(--purple); } .d-red { background: var(--red); }
+  footer { max-width: 980px; margin: 60px auto 0; font-family: 'DM Mono', monospace; font-size: 10px; color: #1e2e1e; text-align: center; letter-spacing: 0.14em; }
+  @media(max-width:640px){ .concept { grid-template-columns: 1fr; } .day-row { grid-template-columns: 80px 1fr; } }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-eyebrow">Backend Engineering Curriculum · 16 Weeks</div>
+  <h1>BUILD<br><span class="accent">REAL</span><br><span class="dim">SOFTWARE.</span></h1>
+  <div class="header-desc">
+    A structured curriculum built around one real project you'll actually use.
+    <strong>PaceCircle</strong> — a web-based fitness calendar app with low-pressure social accountability. You plan workouts on a personal calendar, belong to invite-only circles, and share events with those circles. Circle members can tap "Count me in" to RSVP. Both creator and joiners see each other's names. No algorithm, no social feed — just your people and your schedule.
+    The backend is Java Spring Boot. The web app is React + TypeScript. Every concept taught maps directly to something you build.
+  </div>
+  <div class="stat-strip">
+    <span class="stat stat-g">16 weeks</span>
+    <span class="stat stat-b">6 modules</span>
+    <span class="stat stat-a">10+ hrs/week</span>
+    <span class="stat stat-t">1 real project</span>
+    <span class="stat stat-p">Java · React · TypeScript · PostgreSQL</span>
+  </div>
+</div>
+
+<div class="section-label">
+  <span class="section-num">00</span>
+  <h2>Tech Stack</h2>
+  <div class="line"></div>
+</div>
+
+<div class="stack-wrap">
+  <div class="stack-grid">
+    <div class="stack-card sc-backend">
+      <div class="stack-card-label">Backend</div>
+      <div class="stack-card-title">Java Spring Boot</div>
+      <div class="stack-items">
+        <div class="stack-item"><div class="stack-item-dot d-green"></div>Java 21 + Spring Boot 3.x</div>
+        <div class="stack-item"><div class="stack-item-dot d-green"></div>PostgreSQL (running locally via Homebrew)</div>
+        <div class="stack-item"><div class="stack-item-dot d-green"></div>Spring Security + JWT auth</div>
+        <div class="stack-item"><div class="stack-item-dot d-green"></div>Spring Actuator + StopWatch profiling</div>
+        <div class="stack-item"><div class="stack-item-dot d-green"></div>Redis for caching hot reads</div>
+        <div class="stack-item"><div class="stack-item-dot d-green"></div>JUnit 5 + Mockito testing</div>
+        <div class="stack-item"><div class="stack-item-dot d-green"></div>Docker for deployment</div>
+      </div>
+    </div>
+    <div class="stack-card sc-frontend">
+      <div class="stack-card-label">Web Frontend</div>
+      <div class="stack-card-title">React + TypeScript</div>
+      <div class="stack-items">
+        <div class="stack-item"><div class="stack-item-dot d-blue"></div>React + TypeScript + Vite</div>
+        <div class="stack-item"><div class="stack-item-dot d-blue"></div>React Router v6 for page routing</div>
+        <div class="stack-item"><div class="stack-item-dot d-blue"></div>React Query (TanStack) for API state</div>
+        <div class="stack-item"><div class="stack-item-dot d-blue"></div>Axios with JWT interceptor</div>
+        <div class="stack-item"><div class="stack-item-dot d-blue"></div>date-fns for calendar date logic</div>
+        <div class="stack-item"><div class="stack-item-dot d-blue"></div>Deployed to Vercel</div>
+      </div>
+    </div>
+    <div class="stack-card sc-mobile">
+      <div class="stack-card-label">Mobile (Phase 2)</div>
+      <div class="stack-card-title">React Native</div>
+      <div class="stack-items">
+        <div class="stack-item"><div class="stack-item-dot d-amber"></div>React Native + Expo (Weeks 15–16)</div>
+        <div class="stack-item"><div class="stack-item-dot d-amber"></div>Calls the same Spring Boot backend</div>
+        <div class="stack-item"><div class="stack-item-dot d-amber"></div>React Navigation for screen routing</div>
+        <div class="stack-item"><div class="stack-item-dot d-amber"></div>expo-secure-store for JWT token</div>
+        <div class="stack-item"><div class="stack-item-dot d-amber"></div>TestFlight → App Store submission</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section-label">
+  <span class="section-num">01</span>
+  <h2>The Project — PaceCircle</h2>
+  <div class="line"></div>
+</div>
+
+<div class="project-banner">
+  <div class="project-banner-eyebrow">What You're Building</div>
+  <h2>A Fitness Calendar with Low-Pressure Social Accountability</h2>
+  <p>PaceCircle is a web app where you plan workouts on a personal calendar and belong to small, invite-only circles — your running group, your Pilates friends, your work gym crew. You choose which workouts to share with each circle. Circle members see shared events in a Feed tab and can tap "Count me in" to RSVP. Both the event creator and all joiners see who's attending. RSVPs auto-expire when the event time passes. No algorithm, no public search, no follower counts — just your schedule and your people.</p>
+  <div class="feature-grid">
+    <div class="feature-item f-green">
+      <div class="feature-icon">📅</div>
+      <div class="feature-text"><strong>Personal Calendar</strong> — your workouts only, like Google Calendar. Click any day to log an event or see existing ones. Activity types: RUN, WALK, CYCLING, PILATES_BARRE, STRENGTH_GYM, YOGA, SWIM, OTHER.</div>
+    </div>
+    <div class="feature-item f-blue">
+      <div class="feature-icon">🔵</div>
+      <div class="feature-text"><strong>Invite-Only Circles</strong> — create a circle, get a join code. Friends join via link or code only. No public search, no discovery. One workout can be posted to multiple circles simultaneously.</div>
+    </div>
+    <div class="feature-item f-amber">
+      <div class="feature-icon">📣</div>
+      <div class="feature-text"><strong>Circle Feed</strong> — a separate tab showing upcoming shared workouts from all your circles. Creator, activity type, time, optional meetup location. One-tap RSVP.</div>
+    </div>
+    <div class="feature-item f-purple">
+      <div class="feature-icon">✋</div>
+      <div class="feature-text"><strong>"Count me in" RSVP</strong> — both the event creator and all joiners see each other's names on the attendee list. Mutual visibility. Low stakes. Auto-expires when the event time passes.</div>
+    </div>
+    <div class="feature-item f-teal">
+      <div class="feature-icon">⏱️</div>
+      <div class="feature-text"><strong>Background Jobs</strong> — nightly scheduled job cleans expired RSVP records. Weekly job deactivates dormant circles. Background async email sends so HTTP responses are never blocked.</div>
+    </div>
+    <div class="feature-item f-red">
+      <div class="feature-icon">🔒</div>
+      <div class="feature-text"><strong>Privacy by Design</strong> — JWT-authenticated API, strict per-user data isolation. A valid token from User A cannot access User B's private workouts. Leaving a circle removes feed visibility immediately.</div>
+    </div>
+  </div>
+</div>
+
+<div class="section-label">
+  <span class="section-num">02</span>
+  <h2>16-Week Curriculum</h2>
+  <div class="line"></div>
+</div>
+
+<div class="modules-wrap">
+
+  <!-- MODULE 1 -->
+  <div class="module-card open" id="m1">
+    <div class="module-header" onclick="toggleModule('m1')">
+      <div class="module-num mn-1">01</div>
+      <div class="module-header-main">
+        <div class="module-eyebrow me-1">Weeks 1–3 · Backend</div>
+        <div class="module-title">Java Spring Boot — Beyond CRUD</div>
+        <div class="module-meta">
+          <span class="stat stat-g">Java 21</span>
+          <span class="stat stat-g">Spring Boot</span>
+          <span class="stat stat-g">PostgreSQL</span>
+          <span class="stat stat-g">~30 hrs</span>
+        </div>
+      </div>
+      <div class="module-toggle">▼</div>
+    </div>
+    <div class="module-body">
+
+      <div class="week-block wb-1">
+        <div class="week-header">
+          <span class="week-badge">Week 1</span>
+          <span class="week-title">Project Setup + Layered Architecture</span>
+          <span class="week-hours">~10 hrs</span>
+        </div>
+        <div class="day-schedule">
+          <div class="day-row">
+            <div class="day-label">Mon / Tue</div>
+            <div class="day-tasks">
+              <div class="day-task"><div class="dt-dot d-green"></div><div><strong>Read:</strong> Spring Boot project structure — what every folder and file does. If you have an existing Spring project, annotate every class and annotation: what does this do? Don't look it up yet — guess, then verify.</div></div>
+            </div>
+          </div>
+          <div class="day-row">
+            <div class="day-label">Wed / Thu</div>
+            <div class="day-tasks">
+              <div class="day-task"><div class="dt-dot d-green"></div><div><strong>Build:</strong> Create the PaceCircle project at start.spring.io (Maven, Java 21, Spring Web + Spring Data JPA + PostgreSQL Driver + Validation). Define your entities: <code>User</code>, <code>WorkoutEvent</code> (with <code>activityType</code> enum: RUN / WALK / CYCLING / PILATES_BARRE / STRENGTH_GYM / YOGA / SWIM / OTHER, plus optional <code>customActivityLabel</code>), <code>Circle</code>, <code>CircleMembership</code>, <code>WorkoutCircle</code> (event↔circle join table), <code>WorkoutJoin</code> ("Count me in" RSVP). Write entity classes, repositories, and service stubs — no real logic yet.</div></div>
+            </div>
+          </div>
+          <div class="day-row">
+            <div class="day-label">Fri</div>
+            <div class="day-tasks">
+              <div class="day-task"><div class="dt-dot d-green"></div><div><strong>Understand:</strong> What is <code>@Transactional</code> and when does it matter? Write a test that demonstrates a transaction rolling back when an exception is thrown. This appears in almost every Java backend project.</div></div>
+            </div>
+          </div>
+          <div class="day-row">
+            <div class="day-label">Weekend</div>
+            <div class="day-tasks">
+              <div class="day-task"><div class="dt-dot d-green"></div><div><strong>Build + Verify:</strong> GET /v1/workout-events and POST /v1/workout-events. Verify both in Postman. Read Baeldung's Spring Boot project structure guide and the Spring Data JPA docs on repository methods.</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="concepts">
+          <div class="concept">
+            <div class="concept-term" style="color:var(--green);">@Transactional</div>
+            <div class="concept-desc">Wraps a method in a database transaction — if anything throws, the whole operation rolls back. Use it on service methods that write to the DB. <strong>Project gotcha:</strong> calling a @Transactional method from within the same class bypasses Spring's proxy — the transaction won't fire. This is one of the most common Spring project questions.</div>
+          </div>
+          <div class="concept">
+            <div class="concept-term" style="color:var(--green);">Controller → Service → Repository</div>
+            <div class="concept-desc">The three-layer pattern every Spring Boot app uses. <strong>Controller</strong> handles HTTP. <strong>Service</strong> holds business logic. <strong>Repository</strong> talks to the DB. Never put SQL or business rules in a controller. Never call a repository from a controller.</div>
+          </div>
+          <div class="concept">
+            <div class="concept-term" style="color:var(--green);">@Entity + JPA Relationships</div>
+            <div class="concept-desc"><code>@OneToMany</code>, <code>@ManyToOne</code> — User has many WorkoutEvents. Understand <code>FetchType.LAZY</code> vs <code>EAGER</code>. LAZY (default) loads related data only when accessed. EAGER loads everything upfront, which triggers the N+1 query problem in poorly written code.</div>
+          </div>
+        </div>
+        <div class="milestone ms-green">
+          <div class="milestone-label">🏁 Week 1 Milestone</div>
+          <div class="milestone-text">PaceCircle project running locally. All 6 entities in PostgreSQL. GET and POST for WorkoutEvents working in Postman. You can explain the @Transactional internal-call gotcha.</div>
+        </div>
+      </div>
+
+      <div class="week-block wb-2">
+        <div class="week-header">
+          <span class="week-badge">Week 2</span>
+          <span class="week-title">java.time, Streams, and the Standard Library</span>
+          <span class="week-hours">~10 hrs</span>
+        </div>
+        <div class="day-schedule">
+          <div class="day-row">
+            <div class="day-label">Mon / Tue</div>
+            <div class="day-tasks">
+              <div class="day-task"><div class="dt-dot d-green"></div><div><strong>Learn java.time in depth.</strong> The old <code>Date</code> and <code>Calendar</code> classes are legacy — every real codebase uses <code>java.time</code>. Drill: <code>Instant</code>, <code>ZonedDateTime</code>, <code>LocalDate</code>, <code>Duration</code>, <code>Period</code>. Write examples specific to PaceCircle: "get all events in the next 7 days," "check if an RSVP is expired," "calculate days since the last workout."</div></div>
+            </div>
+          </div>
+          <div class="day-row">
+            <div class="day-label">Wed / Thu</div>
+            <div class="day-tasks">
+              <div class="day-task"><div class="dt-dot d-green"></div><div><strong>Java Streams.</strong> Write service methods using <code>filter()</code>, <code>map()</code>, <code>collect()</code>, <code>groupingBy()</code>, <code>sorted()</code>. Example: "given a list of upcoming events, group them by activityType and count each type." No raw for-loops where Streams work cleanly.</div></div>
+            </div>
+          </div>
+          <div class="day-row">
+            <div class="day-label">Fri + Weekend</div>
+            <div class="day-tasks">
+              <div class="day-task"><div class="dt-dot d-green"></div><div><strong>Build into PaceCircle:</strong> <code>GET /v1/workout-events?from=2025-04-01&to=2025-04-30</code> (calendar date range), <code>GET /v1/workout-events/upcoming</code> (next 7 days), and RSVP expiry filtering — exclude WorkoutJoin records where the event's scheduledAt is in the past. All using java.time and Streams.</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="concepts">
+          <div class="concept">
+            <div class="concept-term" style="color:var(--green);">Instant vs ZonedDateTime</div>
+            <div class="concept-desc"><code>Instant</code> is a UTC timestamp (use for when a record was created). <code>ZonedDateTime</code> is a date + time + timezone (use for when a workout is scheduled). Store <code>scheduledAt</code> as ZonedDateTime — a 6pm run in Charlotte is a different moment than 6pm in Chicago. Getting this wrong breaks expiry logic across timezones.</div>
+          </div>
+          <div class="concept">
+            <div class="concept-term" style="color:var(--green);">Stream.collect(groupingBy)</div>
+            <div class="concept-desc">Groups a list into a Map by a key. <code>events.stream().collect(Collectors.groupingBy(WorkoutEvent::getActivityType, Collectors.counting()))</code> — event count per activity type in one line. This pattern appears constantly in analytics-style endpoints.</div>
+          </div>
+        </div>
+        <div class="milestone ms-green">
+          <div class="milestone-label">🏁 Week 2 Milestone</div>
+          <div class="milestone-text">Date-range filtering works on all workout event endpoints. Upcoming events endpoint returns the next 7 days. Expired RSVPs are filtered correctly. Zero legacy Date objects in the codebase — all java.time.</div>
+        </div>
+      </div>
+
+      <div class="week-block wb-3">
+        <div class="week-header">
+          <span class="week-badge">Week 3</span>
+          <span class="week-title">Validation, Error Handling, and Clean API Design</span>
+          <span class="week-hours">~10 hrs</span>
+        </div>
+        <div class="day-schedule">
+          <div class="day-row">
+            <div class="day-label">Mon / Tue</div>
+            <div class="day-tasks">
+              <div class="day-task"><div class="dt-dot d-green"></div><div><strong>Bean Validation:</strong> Add <code>@Valid</code>, <code>@NotNull</code>, <code>@NotBlank</code>, <code>@FutureOrPresent</code> (on scheduledAt), <code>@Size</code> to your request DTOs. When someone POSTs a workout with no activityType or a past scheduledAt, the API should return a clean 400 with a message — never a stack trace.</div></div>
+            </div>
+          </div>
+          <div class="day-row">
+            <div class="day-label">Wed / Thu</div>
+            <div class="day-tasks">
+              <div class="day-task"><div class="dt-dot d-green"></div><div><strong>Global Exception Handling:</strong> Implement <code>@ControllerAdvice</code>. Define custom exceptions: <code>WorkoutEventNotFoundException</code>, <code>CircleNotFoundException</code>, <code>CircleJoinCodeInvalidException</code>, <code>UnauthorizedAccessException</code>. Map each to the correct HTTP status and a clean JSON error body.</div></div>
+            </div>
+          </div>
+          <div class="day-row">
+            <div class="day-label">Fri + Weekend</div>
+            <div class="day-tasks">
+              <div class="day-task"><div class="dt-dot d-green"></div><div><strong>DTOs and MapStruct:</strong> Create <code>CreateWorkoutEventRequest</code>, <code>JoinCircleRequest</code>, <code>WorkoutEventResponse</code>, <code>CircleResponse</code>. Use MapStruct for entity↔DTO mapping. Ensure no JPA entity is ever returned directly from a controller endpoint.</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="concepts">
+          <div class="concept">
+            <div class="concept-term" style="color:var(--green);">DTO vs Entity</div>
+            <div class="concept-desc">Your <code>WorkoutEvent</code> entity is your database row. Your <code>WorkoutEventResponse</code> is what the API returns — it might omit internal fields, add a computed <code>joinCount</code>, or include <code>isExpired</code>. Always separate the persistence model from the API contract.</div>
+          </div>
+          <div class="concept">
+            <div class="concept-term" style="color:var(--green);">@ControllerAdvice</div>
+            <div class="concept-desc">One class handles exceptions for all controllers. Throw <code>CircleJoinCodeInvalidException</code> anywhere in a service — it automatically becomes a clean 404 JSON response. Without it, every controller needs its own try/catch. With it, error handling is centralized.</div>
+          </div>
+        </div>
+        <div class="resources">
+          <div class="resource-row"><span class="resource-type rt-read">Read</span>Baeldung — "Bean Validation with Spring Boot" · "Exception Handling for REST with Spring" · "Quick Guide to MapStruct"</div>
+          <div class="resource-row"><span class="resource-type rt-docs">Docs</span><a href="https://mapstruct.org" target="_blank">mapstruct.org</a> — getting started guide (10 min read)</div>
+          <div class="resource-row"><span class="resource-type rt-practice">Practice</span>Have someone send a badly-formed POST to your API. It should return a clean JSON error body, never a Java stack trace. That's your test.</div>
+        </div>
+        <div class="milestone ms-green">
+          <div class="milestone-label">🏁 Module 1 Complete — Backend Foundation</div>
+          <div class="milestone-text">PaceCircle backend has: layered architecture with DTOs and MapStruct, global error handling via @ControllerAdvice, date-range and upcoming-event queries using java.time, RSVP expiry filtering using Streams, Bean Validation on all input. This is a production-quality Java API.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MODULE 2 -->
+  <div class="module-card" id="m2">
+    <div class="module-header" onclick="toggleModule('m2')">
+      <div class="module-num mn-2">02</div>
+      <div class="module-header-main">
+        <div class="module-eyebrow me-2">Weeks 4–6 · Production Patterns</div>
+        <div class="module-title">Testing, Profiling &amp; Background Jobs</div>
+        <div class="module-meta">
+          <span class="stat stat-b">JUnit 5</span>
+          <span class="stat stat-b">Mockito</span>
+          <span class="stat stat-b">StopWatch</span>
+          <span class="stat stat-b">Actuator</span>
+          <span class="stat stat-b">~30 hrs</span>
+        </div>
+      </div>
+      <div class="module-toggle">▼</div>
+    </div>
+    <div class="module-body">
+
+      <div class="week-block wb-blue">
+        <div class="week-header">
+          <span class="week-badge">Week 4</span>
+          <span class="week-title">Testing with JUnit 5 and Mockito</span>
+          <span class="week-hours">~10 hrs</span>
+        </div>
+        <div class="day-schedule">
+          <div class="day-row">
+            <div class="day-label">Mon – Wed</div>
+            <div class="day-tasks">
+              <div class="day-task"><div class="dt-dot d-blue"></div><div><strong>Unit testing with Mockito.</strong> Test your service layer by mocking the repository. Learn <code>@Mock</code>, <code>@InjectMocks</code>, <code>@ExtendWith(MockitoExtension.class)</code>, <code>when().thenReturn()</code>, <code>verify(mock, times(n)).method()</code>, <code>assertThrows()</code>. The goal: your service tests don't hit a real database.</div></div>
+            </div>
+          </div>
+          <div class="day-row">
+            <div class="day-label">Thu – Fri</div>
+            <div class="day-tasks">
+              <div class="day-task"><div class="dt-dot d-blue"></div><div><strong>Integration testing with @SpringBootTest.</strong> Test the full stack — controller through service through real database (use H2 in-memory). Write a test that POSTs a workout event, then GETs it back, and asserts values match. This is how companies verify APIs don't break between deploys.</div></div>
+            </div>
+          </div>
+          <div class="day-row">
+            <div class="day-label">Weekend</div>
+            <div class="day-tasks">
+              <div class="day-task"><div class="dt-dot d-blue"></div><div><strong>Test RSVP expiry and circle visibility logic.</strong> Edge cases: 0 RSVPs, event time exactly now, user in multiple circles where only one has the event, user who left a circle trying to see old events. Use <code>verify()</code> to assert that service methods only call the repository once — catching accidental N+1 queries.</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="concepts">
+          <div class="concept">
+            <div class="concept-term" style="color:var(--blue);">Unit vs Integration Test</div>
+            <div class="concept-desc"><strong>Unit test:</strong> tests one class in isolation — mock all dependencies. Runs in milliseconds. Proves: is my logic correct? <strong>Integration test:</strong> tests multiple layers together — hits a real (test) database. Runs in seconds. Proves: do the layers connect correctly? You need both.</div>
+          </div>
+          <div class="concept">
+            <div class="concept-term" style="color:var(--blue);">@Mock vs @MockBean</div>
+            <div class="concept-desc"><code>@Mock</code> is pure Mockito — fast, no Spring context. Use in unit tests. <code>@MockBean</code> replaces a Spring bean in the full application context. Use in <code>@SpringBootTest</code> tests. This distinction appears in almost every Spring project.</div>
+          </div>
+        </div>
+        <div class="milestone ms-blue">
+          <div class="milestone-label">🏁 Week 4 Milestone</div>
+          <div class="milestone-text">Every service method has at least one unit test. RSVP expiry and circle visibility logic have full edge case coverage. <code>./mvnw test</code> shows green. You can explain @Mock vs @MockBean.</div>
+        </div>
+      </div>
+
+      <div class="week-block wb-blue">
+        <div class="week-header">
+          <span class="week-badge">Week 5</span>
+          <span class="week-title">Performance Profiling — StopWatch, Actuator, Logging</span>
+          <span class="week-hours">~10 hrs</span>
+        </div>
+        <div class="day-schedule">
+          <div class="day-row">
+            <div class="day-label">Mon / Tue</div>
+            <div class="day-tasks">
+              <div class="day-task"><div class="dt-dot d-blue"></div><div><strong>Spring StopWatch.</strong> Add <code>org.springframework.util.StopWatch</code> profiling to your service methods. Wrap named sections: <code>sw.start("fetch-events"); ... sw.stop(); log.info(sw.prettyPrint());</code> This outputs a breakdown table of how long each step took. Industry standard for spotting slow service methods before production.</div></div>
+            </div>
+          </div>
+          <div class="day-row">
+            <div class="day-label">Wed / Thu</div>
+            <div class="day-tasks">
+              <div class="day-task"><div class="dt-dot d-blue"></div><div><strong>Spring Boot Actuator.</strong> Add the Actuator dependency. Explore <code>/actuator/health</code>, <code>/actuator/metrics</code>, <code>/actuator/info</code>. Understand what each exposes and why production apps wire these to monitoring systems like Datadog or Grafana. Configure exposure in <code>application.properties</code>.</div></div>
+            </div>
+          </div>
+          <div class="day-row">
+            <div class="day-label">Fri + Weekend</div>
+            <div class="day-tasks">
+              <div class="day-task"><div class="dt-dot d-blue"></div><div><strong>Structured logging with SLF4J.</strong> Replace all <code>System.out.println</code> with proper log statements. Use the correct level for each: <code>log.debug()</code> for dev-only detail, <code>log.info()</code> for normal operations, <code>log.warn()</code> for degraded-but-not-fatal states, <code>log.error()</code> for failures. Never log passwords, JWT tokens, or PII.</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="concepts">
+          <div class="concept">
+            <div class="concept-term" style="color:var(--blue);">org.springframework.util.StopWatch</div>
+            <div class="concept-desc">Spring's built-in timer. Start named tasks, stop them, call <code>prettyPrint()</code> to get a formatted table of task names and durations in ms. Used in real codebases to find which method step is causing latency. Not a tutorial-only tool — this appears in legacy production code.</div>
+          </div>
+          <div class="concept">
+            <div class="concept-term" style="color:var(--blue);">Actuator / Observability</div>
+            <div class="concept-desc"><code>/actuator/health</code> returns whether your app is alive and DB connection is working. Load balancers ping this to decide if an instance should receive traffic. If it returns DOWN, the instance is pulled from rotation. This is how companies detect outages without manual intervention.</div>
+          </div>
+        </div>
+        <div class="resources">
+          <div class="resource-row"><span class="resource-type rt-docs">Docs</span><a href="https://docs.spring.io/spring-boot/docs/current/reference/html/actuator.html" target="_blank">Spring Boot Actuator docs</a> — read "Endpoints" and "Metrics" sections</div>
+          <div class="resource-row"><span class="resource-type rt-read">Read</span>Baeldung — "A Guide to Spring Boot Actuator" · "Introduction to Spring's StopWatch" · "Logging in Spring Boot"</div>
+        </div>
+      </div>
+
+      <div class="week-block wb-blue">
+        <div class="week-header">
+          <span class="week-badge">Week 6</span>
+          <span class="week-title">Background Jobs, Scheduling, and Async Processing</span>
+          <span class="week-hours">~10 hrs</span>
+        </div>
+        <div class="day-schedule">
+          <div class="day-row">
+            <div class="day-label">Mon – Wed</div>
+            <div class="day-tasks">
+              <div class="day-task"><div class="dt-dot d-blue"></div><div><strong>@Scheduled tasks.</strong> Add a nightly job (2am every day) that marks expired WorkoutJoin records. Add a weekly job (Monday 9am) that soft-deactivates circles with no activity in 90 days. Learn cron expressions: <code>@Scheduled(cron = "0 0 2 * * *")</code>. Use crontab.guru to verify your expressions.</div></div>
+            </div>
+          </div>
+          <div class="day-row">
+            <div class="day-label">Thu – Fri</div>
+            <div class="day-tasks">
+              <div class="day-task"><div class="dt-dot d-blue"></div><div><strong>@Async methods.</strong> When a new member joins a circle, send a welcome email asynchronously — the join endpoint returns 201 immediately, the email sends in the background via <code>CompletableFuture&lt;Void&gt;</code>. Requires <code>@EnableAsync</code> on your main class.</div></div>
+            </div>
+          </div>
+          <div class="day-row">
+            <div class="day-label">Weekend</div>
+            <div class="day-tasks">
+              <div class="day-task"><div class="dt-dot d-blue"></div><div><strong>Understand the proxy limitation.</strong> <code>@Async</code> has the exact same internal-call proxy issue as <code>@Transactional</code>. If you call an <code>@Async</code> method from within the same class, it runs synchronously. Write a test demonstrating this, then fix it by moving the async method to a different bean.</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="concepts">
+          <div class="concept">
+            <div class="concept-term" style="color:var(--blue);">@Scheduled vs @Async</div>
+            <div class="concept-desc"><code>@Scheduled</code>: triggered by time, runs on a timer thread regardless of user actions. <code>@Async</code>: triggered by a user action but doesn't block the HTTP response — runs on a thread pool thread. Both require annotations on your main class. Both share the same internal-call proxy limitation as <code>@Transactional</code>.</div>
+          </div>
+          <div class="concept">
+            <div class="concept-term" style="color:var(--blue);">202 Accepted</div>
+            <div class="concept-desc">When work happens asynchronously, return 202 instead of 200. 200 means "I finished." 202 means "I received your request, processing is in progress." Knowing this distinction is basic fluency for a backend role.</div>
+          </div>
+        </div>
+        <div class="milestone ms-blue">
+          <div class="milestone-label">🏁 Module 2 Complete — Production Patterns</div>
+          <div class="milestone-text">PaceCircle has full test coverage, StopWatch profiling on expensive service methods, Spring Actuator enabled, structured SLF4J logging, a nightly expiry cleanup job, a weekly circle deactivation job, and async email scaffolding that returns 202 immediately. These patterns are what separate a tutorial project from code you'd actually deploy.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MODULE 3 -->
+  <div class="module-card" id="m3">
+    <div class="module-header" onclick="toggleModule('m3')">
+      <div class="module-num mn-3">03</div>
+      <div class="module-header-main">
+        <div class="module-eyebrow me-3">Weeks 7–9 · Frontend</div>
+        <div class="module-title">React + TypeScript Web App</div>
+        <div class="module-meta">
+          <span class="stat stat-a">React</span>
+          <span class="stat stat-a">TypeScript</span>
+          <span class="stat stat-a">Vite</span>
+          <span class="stat stat-a">React Query</span>
+          <span class="stat stat-a">~30 hrs</span>
+        </div>
+      </div>
+      <div class="module-toggle">▼</div>
+    </div>
+    <div class="module-body">
+
+      <div class="week-block wb-amber">
+        <div class="week-header">
+          <span class="week-badge">Week 7</span>
+          <span class="week-title">Project Setup + Routing + Calendar Grid</span>
+          <span class="week-hours">~10 hrs</span>
+        </div>
+        <div class="day-schedule">
+          <div class="day-row">
+            <div class="day-label">Mon / Tue</div>
+            <div class="day-tasks">
+              <div class="day-task"><div class="dt-dot d-amber"></div><div><strong>Setup:</strong> <code>npm create vite@latest pacecircle-web -- --template react-ts</code>. Install: <code>react-router-dom</code>, <code>axios</code>, <code>@tanstack/react-query</code>, <code>date-fns</code>. Dev server at localhost:5173 in under 2 minutes. Understand what Vite is and why it replaced Create React App.</div></div>
+            </div>
+          </div>
+          <div class="day-row">
+            <div class="day-label">Wed / Thu</div>
+            <div class="day-tasks">
+              <div class="day-task"><div class="dt-dot d-amber"></div><div><strong>React Router v6:</strong> Routes — <code>/login</code>, <code>/register</code>, <code>/</code> (calendar), <code>/feed</code>, <code>/circles</code>, <code>/profile</code>. Build <code>AppLayout</code> with persistent nav using <code>&lt;Outlet /&gt;</code>. Build <code>AuthLayout</code> (centered card, no nav). Add a protected route wrapper that redirects unauthenticated users to <code>/login</code>.</div></div>
+            </div>
+          </div>
+          <div class="day-row">
+            <div class="day-label">Fri + Weekend</div>
+            <div class="day-tasks">
+              <div class="day-task"><div class="dt-dot d-amber"></div><div><strong>Calendar grid component.</strong> Month view: 7 columns (days of week), rows of weeks. Use date-fns: <code>startOfMonth()</code>, <code>eachDayOfInterval()</code>, <code>isSameDay()</code>. Each day cell shows colored dot indicators for events. Click a day to see events in a sidebar panel. Build from scratch — no calendar library.</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="concepts">
+          <div class="concept">
+            <div class="concept-term" style="color:var(--amber);">React Router &lt;Outlet /&gt;</div>
+            <div class="concept-desc">A placeholder in a layout component where child routes render. <code>AppLayout</code> renders the nav bar and <code>&lt;Outlet /&gt;</code>. Each child page (Calendar, Feed, Circles) renders inside the outlet without duplicating nav. This is the standard nested route pattern in v6.</div>
+          </div>
+          <div class="concept">
+            <div class="concept-term" style="color:var(--amber);">date-fns over native Date</div>
+            <div class="concept-desc">Pure functions, individually importable, tree-shakeable. <code>startOfMonth(date)</code>, <code>addDays(date, 7)</code>, <code>format(date, 'yyyy-MM-dd')</code>, <code>isBefore(a, b)</code>. Native Date math is error-prone and verbose. date-fns is the standard in the React ecosystem.</div>
+          </div>
+        </div>
+        <div class="resources">
+          <div class="resource-row"><span class="resource-type rt-docs">Docs</span><a href="https://reactrouter.com/en/main/start/tutorial" target="_blank">reactrouter.com</a> — "Getting Started" and "Nested Routes" sections</div>
+          <div class="resource-row"><span class="resource-type rt-docs">Docs</span><a href="https://date-fns.org/docs" target="_blank">date-fns.org/docs</a> — browse the function list; everything you need for the calendar is here</div>
+        </div>
+      </div>
+
+      <div class="week-block wb-amber">
+        <div class="week-header">
+          <span class="week-badge">Week 8</span>
+          <span class="week-title">Auth Flow + Connecting to the Backend</span>
+          <span class="week-hours">~10 hrs</span>
+        </div>
+        <div class="day-schedule">
+          <div class="day-row">
+            <div class="day-label">Mon – Wed</div>
+            <div class="day-tasks">
+              <div class="day-task"><div class="dt-dot d-amber"></div><div><strong>Login + Register forms.</strong> POST to <code>/api/auth/login</code> and <code>/api/auth/register</code>. On success, store the JWT in <code>localStorage</code>. Understand the security tradeoff: localStorage is XSS-vulnerable; httpOnly cookies are not but require backend config. Create an Axios instance with a request interceptor that adds <code>Authorization: Bearer &lt;token&gt;</code> automatically to every request.</div></div>
+            </div>
+          </div>
+          <div class="day-row">
+            <div class="day-label">Thu / Fri</div>
+            <div class="day-tasks">
+              <div class="day-task"><div class="dt-dot d-amber"></div><div><strong>Configure CORS in Spring Boot.</strong> Your React app on localhost:5173 calling Spring Boot on localhost:8080 is cross-origin — browsers block this by default. Add global CORS configuration in your Spring Security config allowing localhost:5173 and your Vercel domain. Understand why this is server-side config, not a frontend fix.</div></div>
+            </div>
+          </div>
+          <div class="day-row">
+            <div class="day-label">Weekend</div>
+            <div class="day-tasks">
+              <div class="day-task"><div class="dt-dot d-amber"></div><div><strong>React Query hooks.</strong> Set up <code>QueryClientProvider</code>. Write: <code>useWorkoutEvents(month, year)</code> and <code>useMyCircles()</code>. Display real PostgreSQL data on your calendar — your actual workout events on their scheduled dates. This is the first real full-stack data flow.</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="milestone ms-amber">
+          <div class="milestone-label">🏁 Week 8 Milestone</div>
+          <div class="milestone-text">Login and register work. JWT stored and sent automatically via Axios interceptor. Real workout events from PostgreSQL appear on the calendar. CORS errors resolved. You can explain the localStorage vs httpOnly cookie JWT security tradeoff.</div>
+        </div>
+      </div>
+
+      <div class="week-block wb-amber">
+        <div class="week-header">
+          <span class="week-badge">Week 9</span>
+          <span class="week-title">Core UX — Workout Logging, Feed &amp; RSVP</span>
+          <span class="week-hours">~10 hrs</span>
+        </div>
+        <div class="day-schedule">
+          <div class="day-row">
+            <div class="day-label">Mon – Wed</div>
+            <div class="day-tasks">
+              <div class="day-task"><div class="dt-dot d-amber"></div><div><strong>Workout logging modal.</strong> Click a calendar day → modal opens. Fields: activity type dropdown (enum values + "Other" which reveals a text input), date/time, duration, optional location, visibility (Private / select circles). On submit: POST to API, close modal, invalidate the React Query cache so the calendar updates immediately.</div></div>
+            </div>
+          </div>
+          <div class="day-row">
+            <div class="day-label">Thu – Fri</div>
+            <div class="day-tasks">
+              <div class="day-task"><div class="dt-dot d-amber"></div><div><strong>Feed tab + "Count me in" optimistic update.</strong> Fetch upcoming shared events from all circles. Implement optimistic RSVP: button state changes immediately on tap — POST to API in the background — if the API fails, roll back the button state. This makes the interaction feel instant even on slow connections.</div></div>
+            </div>
+          </div>
+          <div class="day-row">
+            <div class="day-label">Weekend</div>
+            <div class="day-tasks">
+              <div class="day-task"><div class="dt-dot d-amber"></div><div><strong>Circles page + event detail.</strong> List your circles. Create a circle (name → API returns a join code). Join by entering a code. Event detail view: click any event → see full info + RSVP attendee list (names of everyone who said "Count me in"). This is the full social layer of the app.</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="concepts">
+          <div class="concept">
+            <div class="concept-term" style="color:var(--amber);">Optimistic Updates (React Query)</div>
+            <div class="concept-desc"><code>useMutation</code> with <code>onMutate</code> (update cache immediately), <code>onError</code> (roll back to previous cache value if API fails), <code>onSettled</code> (refetch to sync). The "Count me in" button feels instant. If the server rejects it, the button reverts. This is the production pattern — not just a tutorial trick.</div>
+          </div>
+          <div class="concept">
+            <div class="concept-term" style="color:var(--amber);">queryClient.invalidateQueries()</div>
+            <div class="concept-desc">After a successful POST (new workout logged), call this to force React Query to refetch the calendar data. Without it, the new event won't appear until the next page load. With it, the calendar updates in under a second after the modal closes.</div>
+          </div>
+        </div>
+        <div class="milestone ms-amber">
+          <div class="milestone-label">🏁 Module 3 Complete — Full Stack Web App</div>
+          <div class="milestone-text">PaceCircle is a working web application. Login, register, logout. Month calendar with real events from your database. Workout logging modal. Circle Feed with "Count me in" and optimistic updates. Circle creation and join-by-code. Event detail with RSVP attendee names. You built both sides of a full-stack product from scratch.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MODULE 4 -->
+  <div class="module-card" id="m4">
+    <div class="module-header" onclick="toggleModule('m4')">
+      <div class="module-num mn-4">04</div>
+      <div class="module-header-main">
+        <div class="module-eyebrow me-4">Weeks 10–12 · Security &amp; Deployment</div>
+        <div class="module-title">Spring Security, Redis &amp; Docker</div>
+        <div class="module-meta">
+          <span class="stat stat-t">Spring Security</span>
+          <span class="stat stat-t">JWT</span>
+          <span class="stat stat-t">Redis</span>
+          <span class="stat stat-t">Docker</span>
+          <span class="stat stat-t">~30 hrs</span>
+        </div>
+      </div>
+      <div class="module-toggle">▼</div>
+    </div>
+    <div class="module-body">
+
+      <div class="week-block wb-teal">
+        <div class="week-header">
+          <span class="week-badge">Week 10</span>
+          <span class="week-title">Spring Security — JWT Filter Chain + Data Isolation</span>
+          <span class="week-hours">~10 hrs</span>
+        </div>
+        <div class="day-schedule">
+          <div class="day-row">
+            <div class="day-label">Mon / Tue</div>
+            <div class="day-tasks">
+              <div class="day-task"><div class="dt-dot d-teal"></div><div><strong>JWT filter chain.</strong> Implement a <code>JwtAuthenticationFilter</code> that validates the token on every request, extracts the userId, and sets <code>SecurityContextHolder</code>. Configure the filter chain: <code>/api/**</code> requires auth, <code>/api/auth/**</code> is public. Disable CSRF — understand why JWT APIs don't need it.</div></div>
+            </div>
+          </div>
+          <div class="day-row">
+            <div class="day-label">Wed / Thu</div>
+            <div class="day-tasks">
+              <div class="day-task"><div class="dt-dot d-teal"></div><div><strong>Ownership checks in every service method.</strong> Read the authenticated userId from <code>SecurityContextHolder</code>. Assert the resource belongs to the requesting user before returning it. For circle-visible events: assert the user is a member of at least one circle the event was posted to. One missing check = a data breach. This is OWASP A01.</div></div>
+            </div>
+          </div>
+          <div class="day-row">
+            <div class="day-label">Fri + Weekend</div>
+            <div class="day-tasks">
+              <div class="day-task"><div class="dt-dot d-teal"></div><div><strong>Security tests.</strong> Write tests proving User A cannot read User B's private events with a valid JWT. Return 401 for missing/invalid tokens. Return 403 for valid token accessing unauthorized resources. These are the two most commonly confused HTTP codes in backend projects — know the exact difference.</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="concepts">
+          <div class="concept">
+            <div class="concept-term" style="color:var(--teal);">401 vs 403</div>
+            <div class="concept-desc"><strong>401 Unauthorized:</strong> no valid auth presented — "I don't know who you are." <strong>403 Forbidden:</strong> valid auth, but no permission — "I know who you are, and you can't do this." Swapping these is a common mistake.</div>
+          </div>
+          <div class="concept">
+            <div class="concept-term" style="color:var(--teal);">Why JWT APIs skip CSRF</div>
+            <div class="concept-desc">CSRF exploits browsers auto-sending cookies. JWTs must be explicitly added to the <code>Authorization</code> header — browsers never auto-send headers. A malicious site cannot forge a request with your JWT. So CSRF protection is unnecessary for JWT APIs. Disable it: <code>http.csrf(csrf -> csrf.disable())</code>.</div>
+          </div>
+        </div>
+        <div class="milestone ms-teal">
+          <div class="milestone-label">🏁 Week 10 Milestone</div>
+          <div class="milestone-text">JWT filter validates every request. Every service method has ownership checks. Security tests confirm cross-user data access is blocked. 401 and 403 are returned correctly. You can explain the CSRF tradeoff.</div>
+        </div>
+      </div>
+
+      <div class="week-block wb-teal">
+        <div class="week-header">
+          <span class="week-badge">Week 11</span>
+          <span class="week-title">Redis Caching + Rate Limiting</span>
+          <span class="week-hours">~10 hrs</span>
+        </div>
+        <div class="day-schedule">
+          <div class="day-row">
+            <div class="day-label">Mon / Tue</div>
+            <div class="day-tasks">
+              <div class="day-task"><div class="dt-dot d-teal"></div><div><strong>Redis + Spring Cache.</strong> Install Redis (<code>brew install redis</code>). Add <code>spring-boot-starter-data-redis</code> + <code>spring-boot-starter-cache</code>. Annotate your circle feed and circle member list service methods with <code>@Cacheable</code>. First call hits PostgreSQL, subsequent calls return from Redis. Profile with StopWatch before and after to see the latency difference.</div></div>
+            </div>
+          </div>
+          <div class="day-row">
+            <div class="day-label">Wed / Thu</div>
+            <div class="day-tasks">
+              <div class="day-task"><div class="dt-dot d-teal"></div><div><strong>Cache invalidation.</strong> When a new workout event is posted to a circle, the feed cache must evict. When a new member joins, the member list cache must evict. Use <code>@CacheEvict</code> on your write methods. Configure TTLs: 1 hour for feed, 24 hours for member lists. Draw a dependency map first — which writes invalidate which caches.</div></div>
+            </div>
+          </div>
+          <div class="day-row">
+            <div class="day-label">Fri + Weekend</div>
+            <div class="day-tasks">
+              <div class="day-task"><div class="dt-dot d-teal"></div><div><strong>Rate limiting with Bucket4j.</strong> Add rate limiting on the feed endpoint — 100 requests per minute per user. Return 429 Too Many Requests when the bucket is empty. Understand the token bucket algorithm. This is a standard protection pattern for any read-heavy endpoint.</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="concepts">
+          <div class="concept">
+            <div class="concept-term" style="color:var(--teal);">@Cacheable + @CacheEvict</div>
+            <div class="concept-desc"><code>@Cacheable</code>: first call stores result in Redis. Subsequent calls return cached result without hitting the DB. <code>@CacheEvict</code>: removes the cached value, forcing the next call to re-execute. The challenge is knowing which writes must evict which caches — this is where bugs live.</div>
+          </div>
+          <div class="concept">
+            <div class="concept-term" style="color:var(--teal);">TTL vs Explicit Eviction</div>
+            <div class="concept-desc">TTL is the safety net — cache expires after N minutes no matter what. Explicit eviction via <code>@CacheEvict</code> is immediate and precise. Use both: TTL as a fallback for missed evictions, explicit eviction for correctness on write. Without TTL, a bug in your eviction logic means stale data forever.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="week-block wb-teal">
+        <div class="week-header">
+          <span class="week-badge">Week 12</span>
+          <span class="week-title">Docker + Cloud Deployment</span>
+          <span class="week-hours">~10 hrs</span>
+        </div>
+        <div class="day-schedule">
+          <div class="day-row">
+            <div class="day-label">Mon – Wed</div>
+            <div class="day-tasks">
+              <div class="day-task"><div class="dt-dot d-teal"></div><div><strong>Multi-stage Dockerfile.</strong> Stage 1: <code>maven:3.9-eclipse-temurin-21</code> runs <code>mvn package</code>. Stage 2: <code>eclipse-temurin:21-jre-alpine</code> (tiny JRE, no Maven, no source) copies only the JAR from Stage 1. Final image ~200MB instead of ~600MB. Write <code>docker-compose.yml</code> that starts API + PostgreSQL + Redis together with one command.</div></div>
+            </div>
+          </div>
+          <div class="day-row">
+            <div class="day-label">Thu – Weekend</div>
+            <div class="day-tasks">
+              <div class="day-task"><div class="dt-dot d-teal"></div><div><strong>Deploy to Railway + Vercel.</strong> Push Spring Boot backend to Railway (Docker-based, managed PostgreSQL plugin). Set all secrets as environment variables: JWT_SECRET, DATABASE_URL, REDIS_URL — never hardcoded. Deploy React frontend to Vercel — set <code>VITE_API_BASE_URL</code> to the Railway URL. PaceCircle is live on the internet.</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="concepts">
+          <div class="concept">
+            <div class="concept-term" style="color:var(--teal);">Multi-Stage Dockerfile</div>
+            <div class="concept-desc">Stage 1 builds the JAR using a full Maven + JDK image. Stage 2 creates the production image with only a slim JRE — no Maven, no source code, no build tools. Smaller image, smaller attack surface. Every company uses this pattern. Knowing it is non-negotiable for a backend role.</div>
+          </div>
+          <div class="concept">
+            <div class="concept-term" style="color:var(--teal);">Environment Variables</div>
+            <div class="concept-desc">Secrets like JWT_SECRET and DATABASE_URL must never be in source code. Use <code>${VARIABLE_NAME}</code> in application.properties and set real values on the deployment platform. This is a security baseline — if it's in the repo, it can be leaked.</div>
+          </div>
+        </div>
+        <div class="milestone ms-teal">
+          <div class="milestone-label">🏁 Module 4 Complete — Secured &amp; Deployed</div>
+          <div class="milestone-text">PaceCircle has Spring Security with JWT, per-user data isolation, Redis caching with proper eviction strategy, rate limiting, and is deployed to Railway + Vercel with a public URL. A live, secured, production-deployed web application.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MODULE 5 -->
+  <div class="module-card" id="m5">
+    <div class="module-header" onclick="toggleModule('m5')">
+      <div class="module-num mn-5">05</div>
+      <div class="module-header-main">
+        <div class="module-eyebrow me-5">Weeks 13–14 · Polish &amp; Launch</div>
+        <div class="module-title">Email Notifications &amp; Beta Launch</div>
+        <div class="module-meta">
+          <span class="stat stat-p">Resend / SendGrid</span>
+          <span class="stat stat-p">UX Polish</span>
+          <span class="stat stat-p">Beta Users</span>
+          <span class="stat stat-p">~20 hrs</span>
+        </div>
+      </div>
+      <div class="module-toggle">▼</div>
+    </div>
+    <div class="module-body">
+
+      <div class="week-block wb-purple">
+        <div class="week-header">
+          <span class="week-badge">Week 13</span>
+          <span class="week-title">Transactional Email + Frontend Polish</span>
+          <span class="week-hours">~10 hrs</span>
+        </div>
+        <div class="day-schedule">
+          <div class="day-row">
+            <div class="day-label">Mon – Wed</div>
+            <div class="day-tasks">
+              <div class="day-task"><div class="dt-dot d-purple"></div><div><strong>Transactional email.</strong> Choose Resend (clean REST API, generous free tier) or SendGrid (industry standard). Integrate into Spring Boot as an <code>@Async</code> service — the HTTP endpoint returns immediately, email sends in the background. Implement two emails: (1) someone joined your circle, (2) someone said "Count me in" on your event.</div></div>
+            </div>
+          </div>
+          <div class="day-row">
+            <div class="day-label">Thu / Fri</div>
+            <div class="day-tasks">
+              <div class="day-task"><div class="dt-dot d-purple"></div><div><strong>Email idempotency.</strong> If a user double-taps "Count me in" due to a network glitch, don't send two emails. Check for an existing WorkoutJoin record before triggering the email. If the RSVP already exists, skip. This is a common oversight in async workflows.</div></div>
+            </div>
+          </div>
+          <div class="day-row">
+            <div class="day-label">Weekend</div>
+            <div class="day-tasks">
+              <div class="day-task"><div class="dt-dot d-purple"></div><div><strong>Frontend polish.</strong> Add loading skeletons on the calendar, feed, and circles pages — grey animated placeholders matching the layout. Add empty states on every list view: "No workouts this week — click a day to add one" and "Your feed is quiet — join a circle to see others' workouts." Never show a blank screen.</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="milestone ms-purple">
+          <div class="milestone-label">🏁 Week 13 Milestone</div>
+          <div class="milestone-text">Async emails fire on circle joins and RSVPs. Emails are idempotent. All list views have loading skeletons and empty states. No raw API error objects ever shown to users — friendly messages only.</div>
+        </div>
+      </div>
+
+      <div class="week-block wb-purple">
+        <div class="week-header">
+          <span class="week-badge">Week 14</span>
+          <span class="week-title">README, Architecture Diagram &amp; Beta Users</span>
+          <span class="week-hours">~10 hrs</span>
+        </div>
+        <div class="day-schedule">
+          <div class="day-row">
+            <div class="day-label">Mon / Tue</div>
+            <div class="day-tasks">
+              <div class="day-task"><div class="dt-dot d-purple"></div><div><strong>Production-quality README.</strong> Every engineer reads the README. Include: one-paragraph project description, screenshot or GIF of the app, tech stack with one-sentence "why" for each choice, architecture diagram, setup instructions, and a feature list with technical highlights.</div></div>
+            </div>
+          </div>
+          <div class="day-row">
+            <div class="day-label">Wed / Thu</div>
+            <div class="day-tasks">
+              <div class="day-task"><div class="dt-dot d-purple"></div><div><strong>Architecture diagram.</strong> Draw in Excalidraw: React (Vercel) → Spring Boot (Railway) → PostgreSQL + Redis. Label the JWT auth flow, email (Resend), background jobs, Docker container. This diagram goes in the README and you'll reference it in ever time.</div></div>
+            </div>
+          </div>
+          <div class="day-row">
+            <div class="day-label">Fri + Weekend</div>
+            <div class="day-tasks">
+              <div class="day-task"><div class="dt-dot d-purple"></div><div><strong>Beta launch.</strong> Share PaceCircle with at least 3 real users. Set up a simple feedback form (Google Form or Typeform). Collect responses for one week. Note what breaks, what's confusing, what's missing. This is the most valuable signal you'll get before building further.</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="milestone ms-purple">
+          <div class="milestone-label">🏁 Module 5 Complete — Live Product</div>
+          <div class="milestone-text">PaceCircle is deployed, public, documented with an architecture diagram, and in real users' hands. GitHub README is portfolio-ready. You have a live link to share.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MODULE 6 -->
+  <div class="module-card" id="m6">
+    <div class="module-header" onclick="toggleModule('m6')">
+      <div class="module-num mn-6">06</div>
+      <div class="module-header-main">
+        <div class="module-eyebrow me-6">Weeks 15–16 · Mobile + Portfolio</div>
+        <div class="module-title">React Native &amp; App Store</div>
+        <div class="module-meta">
+          <span class="stat stat-b">React Native</span>
+          <span class="stat stat-b">Expo</span>
+          <span class="stat stat-b">TestFlight</span>
+          <span class="stat stat-b">Resume</span>
+          <span class="stat stat-b">~20 hrs</span>
+        </div>
+      </div>
+      <div class="module-toggle">▼</div>
+    </div>
+    <div class="module-body">
+
+      <div class="week-block wb-red">
+        <div class="week-header">
+          <span class="week-badge">Week 15</span>
+          <span class="week-title">React Native — Rebuilding for Mobile</span>
+          <span class="week-hours">~10 hrs</span>
+        </div>
+        <div class="day-schedule">
+          <div class="day-row">
+            <div class="day-label">Mon / Tue</div>
+            <div class="day-tasks">
+              <div class="day-task"><div class="dt-dot d-red"></div><div><strong>Expo setup.</strong> <code>npx create-expo-app PaceCircle-mobile --template</code> (TypeScript template). Run on your phone via Expo Go — you'll see your app live within 20 minutes. No Xcode build times during development. The Spring Boot backend is already on Railway — the mobile app calls the same API.</div></div>
+            </div>
+          </div>
+          <div class="day-row">
+            <div class="day-label">Wed / Thu</div>
+            <div class="day-tasks">
+              <div class="day-task"><div class="dt-dot d-red"></div><div><strong>React Native fundamentals.</strong> Same hooks, same TypeScript, same React mental model — but no DOM. <code>View</code> replaces <code>div</code>. <code>Text</code> replaces <code>p</code>. <code>FlatList</code> for scrollable lists (virtualizes — only renders visible items). <code>StyleSheet.create()</code> replaces CSS. Install React Navigation, set up 4 tabs. Connect to the Railway API.</div></div>
+            </div>
+          </div>
+          <div class="day-row">
+            <div class="day-label">Fri + Weekend</div>
+            <div class="day-tasks">
+              <div class="day-task"><div class="dt-dot d-red"></div><div><strong>JWT storage on mobile.</strong> Use <code>expo-secure-store</code> (device-level encrypted storage — iOS Keychain, Android Keystore) instead of AsyncStorage for the JWT. Never use AsyncStorage for sensitive data. Adapt the React Query hooks from the web version — the API calls are identical.</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="concepts">
+          <div class="concept">
+            <div class="concept-term" style="color:var(--red);">React Native vs React Web</div>
+            <div class="concept-desc">Same mental model (components, hooks, props, state, TypeScript) but no browser APIs. No DOM, no <code>div</code>, no CSS. Native components compile to real iOS/Android views. The TypeScript and React knowledge from the web version transfers completely. The adjustment is primitives and layout — not architecture.</div>
+          </div>
+          <div class="concept">
+            <div class="concept-term" style="color:var(--red);">expo-secure-store</div>
+            <div class="concept-desc">Encrypted key-value storage backed by iOS Keychain and Android Keystore. Use for JWTs, tokens, and any sensitive data. AsyncStorage is unencrypted — never use it for tokens. Security-focused engineers at mobile teams ask about this distinction.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="week-block wb-red">
+        <div class="week-header">
+          <span class="week-badge">Week 16</span>
+          <span class="week-title">App Store Submission + Portfolio Polish</span>
+          <span class="week-hours">~10 hrs</span>
+        </div>
+        <div class="day-schedule">
+          <div class="day-row">
+            <div class="day-label">Mon / Tue</div>
+            <div class="day-tasks">
+              <div class="day-task"><div class="dt-dot d-red"></div><div><strong>App Store checklist.</strong> Apple Developer account ($99/year). Eject Expo to bare workflow. Build the production IPA. Submit to TestFlight internal beta first — verify it works on a real device without Expo Go. Then prepare App Store submission: app icon (1024×1024), screenshots (6.7" and 6.1" iPhone), description, keywords, privacy policy URL (required by Apple).</div></div>
+            </div>
+          </div>
+          <div class="day-row">
+            <div class="day-label">Wed / Thu</div>
+            <div class="day-tasks">
+              <div class="day-task"><div class="dt-dot d-red"></div><div><strong>Resume update.</strong> Add PaceCircle with 4 achievement-oriented bullets covering: architecture scope, specific patterns used (Redis, background jobs, Spring Security, StopWatch), the deployment setup, and the mobile app. Format: [Action verb] + [what you built] + [technical significance or result].</div></div>
+            </div>
+          </div>
+          <div class="day-row">
+            <div class="day-label">Fri + Weekend</div>
+            <div class="day-tasks">
+              <div class="day-task"><div class="dt-dot d-red"></div><div><strong>Project talking points.</strong> Prepare one-sentence defenses for every major technical choice: why Spring Boot (not Node), why PostgreSQL (not MongoDB), why JWT (not sessions), why Redis (not just DB reads every time), why @Scheduled (not on-demand expiry), why @Async for emails, why Vercel + Railway (not AWS directly). These come up every where.</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="milestone ms-red">
+          <div class="milestone-label">🏁 Module 6 Complete — You Shipped It</div>
+          <div class="milestone-text">PaceCircle is in App Store review (or live), deployed on the web, documented with a real architecture diagram, and on your resume. You built a Java Spring Boot API with testing, profiling, scheduling, caching, and security. A React TypeScript web app and a React Native mobile app. Deployed with Docker. In 16 weeks you went from comfortable with basic CRUD to having shipped a production-quality full-stack system across two platforms.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<!-- WEEKLY HOURS GUIDE -->
+<div class="divider"></div>
+<div class="section-label">
+  <span class="section-num">03</span>
+  <h2>How to Use Your 10+ Hours Per Week</h2>
+  <div class="line"></div>
+</div>
+
+<div style="max-width:980px;margin:0 auto 52px;display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px 20px;">
+    <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--green);margin-bottom:12px;">Weekday Structure (~1.5 hrs/day)</div>
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <div style="font-size:12.5px;color:#ccc;padding-left:14px;position:relative;line-height:1.5;"><span style="position:absolute;left:0;color:var(--green);font-size:10px;top:3px;">▸</span><strong style="color:var(--text);">First 30 min:</strong> read one concept — Baeldung article, docs section, or a chapter. Write the key insight in your own words in a running notes doc.</div>
+      <div style="font-size:12.5px;color:#ccc;padding-left:14px;position:relative;line-height:1.5;"><span style="position:absolute;left:0;color:var(--green);font-size:10px;top:3px;">▸</span><strong style="color:var(--text);">Next 60 min:</strong> build. Implement what you read into PaceCircle. Code from scratch — no copy/paste from tutorials. If you get stuck, spend 15 min debugging before looking anything up.</div>
+    </div>
+  </div>
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px 20px;">
+    <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--amber);margin-bottom:12px;">Weekend Structure (~4.5 hrs total)</div>
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <div style="font-size:12.5px;color:#ccc;padding-left:14px;position:relative;line-height:1.5;"><span style="position:absolute;left:0;color:var(--amber);font-size:10px;top:3px;">▸</span><strong style="color:var(--text);">Saturday (2–3 hrs):</strong> the bigger build — implement the week's milestone feature end to end. This is your main coding session. No interruptions.</div>
+      <div style="font-size:12.5px;color:#ccc;padding-left:14px;position:relative;line-height:1.5;"><span style="position:absolute;left:0;color:var(--amber);font-size:10px;top:3px;">▸</span><strong style="color:var(--text);">Sunday (1–2 hrs):</strong> write tests for what you built Saturday. Fix anything broken. Document what you learned that week in a short journal entry — this forces retention and becomes your reference project material.</div>
+    </div>
+  </div>
+</div>
+
+<footer>PACECIRCLE CURRICULUM · 16 WEEKS · 2026</footer>
+
+<script>
+  function toggleModule(id) {
+    document.getElementById(id).classList.toggle('open');
+  }
+</script>
+</body>
+</html>
