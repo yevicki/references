@@ -121,62 +121,30 @@
     <div class="prompt-meta">Use when: starting any conversation where Claude needs to understand who you are and what you're building. Also useful mid-conversation if Claude seems to have lost context.</div>
     <div class="prompt-text-wrap">
       <button class="copy-btn" onclick="copyPrompt('t-ctx')">Copy</button>
-      <div class="prompt-text" id="t-ctx">## PaceCircle — Full Project Context
+      <div class="prompt-text" id="t-ctx">PaceCircle — Project Context
+        ## Who I am: SWE2 at Bank of America. CS + Info Science, UNC (3.79 GPA). Building PaceCircle to close a production Java gap. Java CRUD comfortable, still building intuition beyond that. Common mistakes: Python habits (self→this, append→add, ==→equals, length→size).
+The project: Web-based fitness calendar app with low-pressure social accountability.
 
-### Who I am
-- Computer Science + Information Science double major, UNC Chapel Hill
-- Software Engineer 2 at Bank of America (web application modernization using Angular, database modernization, legacy Autosys jobs, SQL, large database management)
-- Java: learned in college, refreshed recently. I struggled with unfamiliar Java packages (StopWatch, Actuator), working inside a full application beyond CRUD, and explaining tradeoffs out loud
-- I am building PaceCircle to close that gap while creating something I would genuinely use and can share
-- Common Java mistakes I still make: Python habits bleeding in — == vs .equals(), .length vs .size(), forgetting generic wrappers (Optional<Double> not Optional<double>)
+Personal calendar view (your workouts only) + Feed tab for circle activity
+Google Calendar-style multi-calendar filter: personal calendar + one per circle, toggled on/off client-side in React; backend returns all authorized events tagged with their source
+Invite-only circles via 6-character alphanumeric join code (unique constraint + retry-on-collision in CircleService)
+Workout events can be posted to multiple circles simultaneously
+"Count me in" RSVP — creator and joiners see each other's names
+RSVP expiry handled via query-time filter (WHERE scheduled_at > NOW()), not a background job
+Optional location/meetup point on events
+No event editing in v1 — delete and repost. V2 consideration: allow creator edits with RSVP update notifications
+When a user leaves a circle: their events are removed from that circle (WorkoutCircle rows deleted), associated RSVPs cascade-deleted; WorkoutEvent persists on personal calendar
+Workout types: RUN, WALK, CYCLING, PILATES_BARRE, STRENGTH_GYM, YOGA, SWIM, OTHER (+ customActivityLabel when OTHER)
+Account required: email + username + password
 
-### My learning preferences
-- Do NOT give me answers or code upfront
-- Ask clarifying questions and nudge me toward the answer
-- Only give direct answers for genuinely new concepts I've never encountered
-- Be strict — flag incorrect statements and gaps rather than letting them pass
-- I prefer to reason through logic independently after targeted hints
+Tech stack: Java 21, Spring Boot 3.3.x, PostgreSQL 16, Spring Security + JWT, React + TypeScript (Vercel), backend on Railway or Fly.io
+Core entities: User, WorkoutEvent (activityType enum, customActivityLabel, scheduledAt as ZonedDateTime stored as TIMESTAMPTZ, visibility enum: PRIVATE | CIRCLE), Circle (joinCode), CircleMembership, WorkoutCircle (event↔circle join), WorkoutJoin (RSVPs)
+Key rules:
 
-### The project: PaceCircle
-A web-based fitness calendar app with a low-pressure social accountability layer.
-
-**Core concept:** You plan workouts on a personal calendar. You belong to invite-only "circles" (small groups: "Morning Runners", "Pilates Girls", "Work Gym Crew"). When creating a workout event, you choose visibility: Private, or shared with any/all of your circles. Circle members see your shared workouts in their Feed tab and can tap "Count me in" to silently RSVP. Both the creator and all joiners see who is attending.
-
-**Finalized design decisions:**
-- Primary view: personal calendar (your workouts only, like Google Calendar)
-- Circle activity: separate Feed tab — not overlaid on the main calendar
-- Circles: invite-only via shareable link or join code. No public search.
-- Circles can overlap: one workout can be posted to multiple circles simultaneously
-- Join visibility: Option B — both creator and all joiners see each other's names on the RSVP list
-- Joining auto-expires when the event datetime passes. Future feature: user-configurable expiry.
-- Location/meetup point: optional field on each workout event
-- RSVP button label: "Count me in"
-- Account required: email + username + password (fast registration). No guest access.
-- Launch platform: web app first (React + TypeScript, deployed to Vercel). React Native + App Store later.
-- Workout types (enum): RUN, WALK, CYCLING, PILATES_BARRE, STRENGTH_GYM, YOGA, SWIM, OTHER
-- OTHER type has an optional customActivityLabel text field (e.g. "Pickleball", "Aerial Silks")
-- Google Calendar sync: stretch goal after web launch, not in MVP
-
-**Tech stack:**
-- Backend: Java 21, Spring Boot 3.x, PostgreSQL, Spring Security + JWT, Maven
-- Frontend: React + TypeScript, deployed to Vercel (React Native comes later for App Store)
-- Deployment: backend on Railway or Fly.io, frontend on Vercel
-- PostgreSQL running locally on localhost:5432 (Homebrew on Mac)
-- Start command: /opt/homebrew/opt/postgresql@18/bin/postgres -D /opt/homebrew/var/postgresql@18
-
-**Core data model (entities):**
-- User: id, email, username, passwordHash, createdAt
-- WorkoutEvent: id, userId, activityType (enum), customActivityLabel (nullable), scheduledAt (ZonedDateTime), durationMinutes, locationName (nullable), locationDetails (nullable), visibility (PRIVATE / CIRCLE), circleIds (join table), expiresAt (= scheduledAt + durationMinutes), createdAt
-- Circle: id, name, createdByUserId, joinCode (unique), createdAt
-- CircleMembership: id, circleId, userId, joinedAt
-- WorkoutCircle: id, workoutEventId, circleId (many-to-many between events and circles)
-- WorkoutJoin: id, workoutEventId, userId, joinedAt (the "Count me in" RSVP)
-
-**Key business rules:**
-- A user can only see a WorkoutEvent if: they created it, OR they are in at least one circle the event was posted to
-- WorkoutJoin records where WorkoutEvent.scheduledAt is in the past are considered expired — exclude from active RSVPs
-- Deleting a circle does not delete its workout events — events lose that circle association only
-- A user leaving a circle loses visibility to that circle's future events immediately</div>
+Users see events they created OR events in circles they belong to
+Expired joins excluded via WHERE scheduled_at > NOW() filter
+Leaving a circle immediately removes visibility to that circle's future events
+PRIVATE events appear on personal calendar only, never in feeds or circles</div>
     </div>
   </div>
 </div>
