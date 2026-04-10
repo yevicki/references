@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UI Palette — Circle</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #111217;
+    --surface: #1C1F2B;
+    --border: #2A2E40;
+    --text: #E0E3F0;
+    --muted: #8B8FA8;
+    --font-mono: 'DM Mono', monospace;
+  }
+  
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    min-height: 100vh;
+    padding: 0;
+  }
+  
+  .palette-root { max-width: 1000px; margin: 0 auto; padding: 40px 24px 80px; }
+  .section-label { font-size: 12px; color: var(--muted); font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; margin: 0 0 20px; font-family: var(--font-mono); }
+  .swatch-row { display: flex; gap: 16px; margin-bottom: 2rem; flex-wrap: wrap; }
+  .swatch { border-radius: 10px; padding: 16px; min-width: 140px; flex: 1; }
+  .swatch-name { font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+  .swatch-hex { font-size: 11px; font-family: var(--font-mono); opacity: 0.7; margin-bottom: 8px; }
+  .swatch-tag { font-size: 10px; padding: 3px 8px; border-radius: 4px; display: inline-block; background: rgba(255,255,255,0.05); }
+  .usage-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 2rem; }
+  .usage-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+  .usage-card-label { font-size: 11px; color: var(--muted); margin-bottom: 8px; text-transform: uppercase; font-family: var(--font-mono); font-weight: 500; }
+  .usage-card-val { font-size: 13px; font-weight: 500; color: var(--text); }
+  .preview-bar { display: flex; height: 60px; border-radius: 10px; overflow: hidden; margin-bottom: 2rem; }
+  .preview-bar div { flex: 1; }
+  .divider { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
+  .mockup { background: #111217; border: 1px solid var(--border); border-radius: 14px; padding: 20px; }
+  .mock-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .mock-logo { font-size: 16px; font-weight: 600; color: #E8B84B; }
+  .mock-nav { display: flex; gap: 8px; }
+  .mock-nav span { font-size: 11px; color: #8B8FA8; padding: 4px 10px; border-radius: 6px; background: #1C1F2B; }
+  .mock-nav span.active { color: #E8B84B; background: #2A2410; }
+  .mock-stat-row { display: flex; gap: 8px; margin-bottom: 12px; }
+  .mock-stat { flex: 1; background: #1C1F2B; border-radius: 8px; padding: 10px; border: 1px solid var(--border); }
+  .mock-stat-num { font-size: 16px; font-weight: 600; color: #E8B84B; }
+  .mock-stat-label { font-size: 9px; color: #8B8FA8; margin-top: 4px; }
+  
+  h1 {
+    font-size: 32px;
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+  
+  .subtitle {
+    font-size: 14px;
+    color: var(--muted);
+    margin-bottom: 40px;
+  }
+</style>
+</head>
+<body>
+
+<!-- SITE NAV -->
+<nav style="position:sticky;top:0;z-index:100;background:rgba(17,18,23,0.92);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid #2a2e40;padding:0 20px;">
+  <div style="max-width:1000px;margin:0 auto;height:44px;display:flex;align-items:center;justify-content:space-between;">
+    <a href="../index.html" style="font-family:'DM Mono',monospace;font-size:11px;color:#555870;text-decoration:none;display:flex;align-items:center;gap:8px;letter-spacing:0.06em;transition:color 0.15s;" onmouseover="this.style.color='#E8B84B'" onmouseout="this.style.color='#555870'">
+      <span style="font-size:14px;">←</span> references
+    </a>
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+      <a href="circle-curriculum.html" style="font-family:'DM Mono',monospace;font-size:10px;color:#555870;text-decoration:none;letter-spacing:0.08em;border:1px solid #2a2e40;padding:4px 11px;border-radius:4px;transition:all 0.15s;" onmouseover="this.style.color='#E8B84B';this.style.borderColor='rgba(232,184,75,0.35)'" onmouseout="this.style.color='#555870';this.style.borderColor='#2a2e40'">Curriculum</a>
+      <a href="circle-checklist.html" style="font-family:'DM Mono',monospace;font-size:10px;color:#555870;text-decoration:none;letter-spacing:0.08em;border:1px solid #2a2e40;padding:4px 11px;border-radius:4px;transition:all 0.15s;" onmouseover="this.style.color='#E8B84B';this.style.borderColor='rgba(232,184,75,0.35)'" onmouseout="this.style.color='#555870';this.style.borderColor='#2a2e40'">Checklist</a>
+      <a href="circle-wireframes.html" style="font-family:'DM Mono',monospace;font-size:10px;color:#555870;text-decoration:none;letter-spacing:0.08em;border:1px solid #2a2e40;padding:4px 11px;border-radius:4px;transition:all 0.15s;" onmouseover="this.style.color='#E8B84B';this.style.borderColor='rgba(232,184,75,0.35)'" onmouseout="this.style.color='#555870';this.style.borderColor='#2a2e40'">Wireframes</a>
+    </div>
+  </div>
+</nav>
+
+<div class="palette-root">
+  <h1>Circle UI Palette</h1>
+  <p class="subtitle">Color system, typography, and design tokens for the Circle app</p>
+
+<div class="palette-root">
+  <h2 class="sr-only">Dark neon gold color palette for a fitness social media app</h2>
+
+  <p class="section-label">Core palette</p>
+  <div class="swatch-row">
+    <div class="swatch" style="background:#111217;">
+      <div class="swatch-name" style="color:#E0E3F0;">Obsidian</div>
+      <div class="swatch-hex" style="color:#8B8FA8;">#111217</div>
+      <span class="swatch-tag" style="background:#1C1F2B; color:#8B8FA8;">Base bg</span>
+    </div>
+    <div class="swatch" style="background:#1C1F2B;">
+      <div class="swatch-name" style="color:#E0E3F0;">Midnight</div>
+      <div class="swatch-hex" style="color:#8B8FA8;">#1C1F2B</div>
+      <span class="swatch-tag" style="background:#111217; color:#8B8FA8;">Surface</span>
+    </div>
+    <div class="swatch" style="background:#2A2E40;">
+      <div class="swatch-name" style="color:#E0E3F0;">Steel</div>
+      <div class="swatch-hex" style="color:#8B8FA8;">#2A2E40</div>
+      <span class="swatch-tag" style="background:#111217; color:#8B8FA8;">Border</span>
+    </div>
+    <div class="swatch" style="background:#E8B84B;">
+      <div class="swatch-name" style="color:#111217;">Gold</div>
+      <div class="swatch-hex" style="color:#3a2c00;">#E8B84B</div>
+      <span class="swatch-tag" style="background:#3a2c00; color:#E8B84B;">Primary</span>
+    </div>
+  </div>
+
+  <p class="section-label">Accent &amp; text</p>
+  <div class="swatch-row">
+    <div class="swatch" style="background:#39FF14;">
+      <div class="swatch-name" style="color:#0D1117;">Neon green</div>
+      <div class="swatch-hex" style="color:#1a3a00;">#39FF14</div>
+      <span class="swatch-tag" style="background:#1a3a00; color:#39FF14;">Fitness action</span>
+    </div>
+    <div class="swatch" style="background:#00D9FF;">
+      <div class="swatch-name" style="color:#001e2a;">Electric blue</div>
+      <div class="swatch-hex" style="color:#002233;">#00D9FF</div>
+      <span class="swatch-tag" style="background:#00293a; color:#00D9FF;">Social / links</span>
+    </div>
+    <div class="swatch" style="background:#E0E3F0;">
+      <div class="swatch-name" style="color:#1C1F2B;">Ghost white</div>
+      <div class="swatch-hex" style="color:#3a3e52;">#E0E3F0</div>
+      <span class="swatch-tag" style="background:#2A2E40; color:#E0E3F0;">Body text</span>
+    </div>
+    <div class="swatch" style="background:#8B8FA8;">
+      <div class="swatch-name" style="color:#111217;">Ash</div>
+      <div class="swatch-hex" style="color:#111217;">#8B8FA8</div>
+      <span class="swatch-tag" style="background:#1C1F2B; color:#8B8FA8;">Muted text</span>
+    </div>
+  </div>
+
+  <p class="section-label">Palette preview</p>
+  <div class="preview-bar">
+    <div style="background:#111217;"></div>
+    <div style="background:#1C1F2B;"></div>
+    <div style="background:#2A2E40;"></div>
+    <div style="background:#8B8FA8;"></div>
+    <div style="background:#E0E3F0;"></div>
+    <div style="background:#E8B84B;"></div>
+    <div style="background:#39FF14;"></div>
+    <div style="background:#00D9FF;"></div>
+  </div>
+
+  <hr class="divider">
+
+  <p class="section-label">Usage guide</p>
+  <div class="usage-grid">
+    <div class="usage-card">
+      <div class="usage-card-label">Page background</div>
+      <div class="usage-card-val" style="color:#E8B84B;">Obsidian #111217</div>
+    </div>
+    <div class="usage-card">
+      <div class="usage-card-label">Cards &amp; panels</div>
+      <div class="usage-card-val" style="color:#E8B84B;">Midnight #1C1F2B</div>
+    </div>
+    <div class="usage-card">
+      <div class="usage-card-label">Buttons, CTAs, badges</div>
+      <div class="usage-card-val" style="color:#E8B84B;">Gold #E8B84B</div>
+    </div>
+    <div class="usage-card">
+      <div class="usage-card-label">Progress bars, PRs, streaks</div>
+      <div class="usage-card-val" style="color:#39FF14;">Neon green #39FF14</div>
+    </div>
+    <div class="usage-card">
+      <div class="usage-card-label">Links, follows, social</div>
+      <div class="usage-card-val" style="color:#00D9FF;">Electric blue #00D9FF</div>
+    </div>
+    <div class="usage-card">
+      <div class="usage-card-label">Body text</div>
+      <div class="usage-card-val">Ghost white #E0E3F0</div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <p class="section-label">App mockup preview</p>
+  <div class="mockup">
+    <div class="mock-header">
+      <div class="mock-logo">⚡ APEXFIT</div>
+      <div class="mock-nav">
+        <span class="active">Feed</span>
+        <span>Explore</span>
+        <span>Stats</span>
+      </div>
+    </div>
+    <div class="mock-stat-row">
+      <div class="mock-stat">
+        <div class="mock-stat-num">12,450</div>
+        <div class="mock-stat-label">Steps today</div>
+      </div>
+      <div class="mock-stat">
+        <div class="mock-stat-num" style="color:#39FF14;">847</div>
+        <div class="mock-stat-label">Calories burned</div>
+      </div>
+      <div class="mock-stat">
+        <div class="mock-stat-num" style="color:#00D9FF;">38</div>
+        <div class="mock-stat-label">Followers online</div>
+      </div>
+    </div>
+    <div class="mock-post">
+      <div class="mock-post-top">
+        <div class="mock-avatar">JK</div>
+        <div>
+          <div class="mock-username">@jaykang</div>
+          <div class="mock-subtext">2 min ago · Leg day 🔥</div>
+        </div>
+      </div>
+      <div class="mock-text">New squat PR — 315 lbs. Been grinding for 6 months. The dark days were worth it 💪</div>
+      <div class="mock-actions">
+        <button class="mock-btn">🏆 Hype</button>
+        <button class="mock-btn ghost">Comment</button>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
