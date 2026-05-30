@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>16-Week Running Plan</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;1,9..144,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0e0f0d;
+    --surface: #161714;
+    --surface2: #1e1f1c;
+    --border: #2a2b27;
+    --text: #e8e6df;
+    --muted: #7a7870;
+    --phase1: #7eb87e;
+    --phase2: #e8c468;
+    --phase3: #e8926a;
+    --phase4: #9b84d4;
+    --easy: #5a9e7c;
+    --tempo: #d4884a;
+    --interval: #c45c5c;
+    --long: #4a7eb8;
+    --stride: #a0c4a0;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    min-height: 100vh;
+    padding: 48px 24px;
+  }
+
+  .grain {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.03;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 128px 128px;
+  }
+
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+
+  header {
+    margin-bottom: 56px;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .label {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(36px, 6vw, 64px);
+    font-weight: 300;
+    line-height: 1.05;
+    color: var(--text);
+    margin-bottom: 16px;
+  }
+
+  h1 em {
+    font-style: italic;
+    color: var(--phase1);
+  }
+
+  .subtitle {
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.7;
+    max-width: 500px;
+  }
+
+  /* HR Zones box */
+  .zones-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    margin-bottom: 48px;
+    animation: fadeUp 0.6s 0.1s ease both;
+  }
+
+  .zone-card {
+    background: var(--surface);
+    padding: 16px;
+  }
+
+  .zone-name {
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+
+  .zone-range {
+    font-size: 18px;
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+
+  .zone-feel {
+    font-size: 10px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  .zone-bar {
+    height: 2px;
+    margin-bottom: 10px;
+    border-radius: 1px;
+  }
+
+  /* Phase sections */
+  .phase {
+    margin-bottom: 40px;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .phase:nth-child(1) { animation-delay: 0.15s; }
+  .phase:nth-child(2) { animation-delay: 0.25s; }
+  .phase:nth-child(3) { animation-delay: 0.35s; }
+  .phase:nth-child(4) { animation-delay: 0.45s; }
+
+  .phase-header {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    margin-bottom: 2px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .phase-title {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    font-weight: 300;
+  }
+
+  .phase-weeks {
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .phase-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-bottom: 2px;
+  }
+
+  .phase-note {
+    font-size: 11px;
+    color: var(--muted);
+    padding: 10px 0 14px;
+    line-height: 1.6;
+  }
+
+  /* Week rows */
+  .week-row {
+    display: grid;
+    grid-template-columns: 64px 1fr;
+    gap: 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .week-row:last-child {
+    border-bottom: none;
+  }
+
+  .week-num {
+    padding: 14px 0;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    border-right: 1px solid var(--border);
+    display: flex;
+    align-items: flex-start;
+    padding-top: 16px;
+  }
+
+  .week-content {
+    padding: 12px 0 12px 20px;
+  }
+
+  .week-total {
+    font-size: 10px;
+    color: var(--muted);
+    margin-bottom: 8px;
+    letter-spacing: 0.05em;
+  }
+
+  .runs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .run-tag {
+    font-size: 10px;
+    padding: 4px 10px;
+    border-radius: 2px;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+  }
+
+  .run-easy { background: rgba(90,158,124,0.15); color: var(--easy); border: 1px solid rgba(90,158,124,0.3); }
+  .run-long { background: rgba(74,126,184,0.15); color: var(--long); border: 1px solid rgba(74,126,184,0.3); }
+  .run-tempo { background: rgba(212,136,74,0.15); color: var(--tempo); border: 1px solid rgba(212,136,74,0.3); }
+  .run-interval { background: rgba(196,92,92,0.15); color: var(--interval); border: 1px solid rgba(196,92,92,0.3); }
+  .run-stride { background: rgba(160,196,160,0.12); color: var(--stride); border: 1px solid rgba(160,196,160,0.25); }
+  .run-trial { background: rgba(155,132,212,0.15); color: var(--phase4); border: 1px solid rgba(155,132,212,0.3); }
+  .run-cutback { background: rgba(122,120,112,0.15); color: var(--muted); border: 1px solid rgba(122,120,112,0.3); }
+
+  .week-note {
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 8px;
+    line-height: 1.6;
+    font-style: italic;
+  }
+
+  /* Legend */
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 20px;
+    padding: 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    margin-bottom: 48px;
+    animation: fadeUp 0.6s 0.05s ease both;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 10px;
+    color: var(--muted);
+  }
+
+  .legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 1px;
+    flex-shrink: 0;
+  }
+
+  /* Interval guide box */
+  .interval-guide {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--interval);
+    padding: 20px 24px;
+    margin-bottom: 48px;
+    animation: fadeUp 0.6s 0.5s ease both;
+  }
+
+  .interval-guide .label {
+    margin-bottom: 16px;
+    color: var(--interval);
+  }
+
+  .interval-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .interval-step {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 16px;
+    font-size: 11px;
+    line-height: 1.6;
+  }
+
+  .step-label {
+    color: var(--muted);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding-top: 1px;
+  }
+
+  .step-desc {
+    color: var(--text);
+  }
+
+  .step-desc span {
+    color: var(--interval);
+  }
+
+  /* Effort key */
+  .effort-key {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    margin-bottom: 48px;
+    animation: fadeUp 0.6s 0.55s ease both;
+  }
+
+  .effort-card {
+    background: var(--surface);
+    padding: 14px 16px;
+  }
+
+  .effort-name {
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+    margin-bottom: 5px;
+  }
+
+  .effort-feel {
+    font-size: 11px;
+    margin-bottom: 4px;
+    line-height: 1.4;
+  }
+
+  .effort-hr {
+    font-size: 10px;
+    color: var(--muted);
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .phase-wrapper {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 0 20px 4px;
+    margin-bottom: 24px;
+  }
+
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 40px 0;
+  }
+
+  footer {
+    font-size: 10px;
+    color: var(--muted);
+    line-height: 1.8;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    animation: fadeUp 0.6s 0.6s ease both;
+  }
+</style>
+</head>
+<body>
+<div class="grain"></div>
+<div class="container">
+
+  <header>
+    <div class="label">16-Week Plan</div>
+    <h1>Return to <em>8-minute</em><br>pace</h1>
+    <p class="subtitle">3 runs per week · road & trail · no track required<br>Starting base: 3–4 miles/week</p>
+  </header>
+
+  <!-- Heart Rate Zones -->
+  <div class="label">Heart Rate Reference (% of max HR)</div>
+  <div class="zones-grid" style="margin-top: 10px;">
+    <div class="zone-card">
+      <div class="zone-bar" style="background: #4a90c4;"></div>
+      <div class="zone-name">Zone 1 · Recovery</div>
+      <div class="zone-range" style="color: #4a90c4;">50–60%</div>
+      <div class="zone-feel">Very easy. Walking pace. Used between intervals.</div>
+    </div>
+    <div class="zone-card">
+      <div class="zone-bar" style="background: var(--easy);"></div>
+      <div class="zone-name">Zone 2 · Easy</div>
+      <div class="zone-range" style="color: var(--easy);">60–70%</div>
+      <div class="zone-feel">Conversational. Full sentences. All easy runs live here.</div>
+    </div>
+    <div class="zone-card">
+      <div class="zone-bar" style="background: var(--phase2);"></div>
+      <div class="zone-name">Zone 3 · Tempo</div>
+      <div class="zone-range" style="color: var(--phase2);">70–80%</div>
+      <div class="zone-feel">Comfortably hard. A few words only. Tempo runs.</div>
+    </div>
+    <div class="zone-card">
+      <div class="zone-bar" style="background: var(--tempo);"></div>
+      <div class="zone-name">Zone 4 · Hard</div>
+      <div class="zone-range" style="color: var(--tempo);">80–90%</div>
+      <div class="zone-feel">Hard effort. Intervals land here. Strides may peak here briefly.</div>
+    </div>
+    <div class="zone-card">
+      <div class="zone-bar" style="background: var(--interval);"></div>
+      <div class="zone-name">Zone 5 · Max</div>
+      <div class="zone-range" style="color: var(--interval);">90–100%</div>
+      <div class="zone-feel">Not used in this plan. Avoid.</div>
+    </div>
+  </div>
+
+  <!-- Legend -->
+  <div class="legend">
+    <div class="label" style="width:100%; margin-bottom:4px;">Run types</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--easy);"></div>Easy run (Zone 2)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--long);"></div>Long run (Zone 2)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--stride);"></div>Easy + strides</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--tempo);"></div>Tempo run (Zone 3)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--interval);"></div>Interval run (Zone 4)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--phase4);"></div>Time trial</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#555;"></div>Cutback / recovery week</div>
+  </div>
+
+  <!-- Phase 1 -->
+  <div class="phase">
+    <div class="phase-header">
+      <div class="phase-dot" style="background:var(--phase1);"></div>
+      <div class="phase-title" style="color:var(--phase1);">Phase 1 · Base Building</div>
+      <div class="phase-weeks">Weeks 1–6</div>
+    </div>
+    <div class="phase-note">All runs easy and conversational. Zero pace pressure. Focus: accumulating time on feet without getting hurt. Stay firmly in Zone 2 — if you can't speak in full sentences, slow down.</div>
+    <div class="phase-wrapper">
+      <div class="week-row">
+        <div class="week-num">WK 01</div>
+        <div class="week-content">
+          <div class="week-total">4.5 miles total</div>
+          <div class="runs">
+            <span class="run-tag run-easy">Easy 1.5 mi</span>
+            <span class="run-tag run-easy">Easy 1.5 mi</span>
+            <span class="run-tag run-easy">Easy 1.5 mi</span>
+          </div>
+        </div>
+      </div>
+      <div class="week-row">
+        <div class="week-num">WK 02</div>
+        <div class="week-content">
+          <div class="week-total">5.25 miles total</div>
+          <div class="runs">
+            <span class="run-tag run-easy">Easy 1.75 mi</span>
+            <span class="run-tag run-easy">Easy 1.75 mi</span>
+            <span class="run-tag run-easy">Easy 1.75 mi</span>
+          </div>
+        </div>
+      </div>
+      <div class="week-row">
+        <div class="week-num">WK 03</div>
+        <div class="week-content">
+          <div class="week-total">6 miles total</div>
+          <div class="runs">
+            <span class="run-tag run-easy">Easy 1.75 mi</span>
+            <span class="run-tag run-easy">Easy 1.75 mi</span>
+            <span class="run-tag run-long">Long 2.5 mi</span>
+          </div>
+        </div>
+      </div>
+      <div class="week-row">
+        <div class="week-num">WK 04</div>
+        <div class="week-content">
+          <div class="week-total">6.5 miles total</div>
+          <div class="runs">
+            <span class="run-tag run-easy">Easy 2 mi</span>
+            <span class="run-tag run-easy">Easy 2 mi</span>
+            <span class="run-tag run-long">Long 2.5 mi</span>
+          </div>
+        </div>
+      </div>
+      <div class="week-row">
+        <div class="week-num">WK 05</div>
+        <div class="week-content">
+          <div class="week-total">7 miles total</div>
+          <div class="runs">
+            <span class="run-tag run-easy">Easy 2 mi</span>
+            <span class="run-tag run-easy">Easy 2 mi</span>
+            <span class="run-tag run-long">Long 3 mi</span>
+          </div>
+        </div>
+      </div>
+      <div class="week-row">
+        <div class="week-num">WK 06</div>
+        <div class="week-content">
+          <div class="week-total">7.5 miles total · cutback week</div>
+          <div class="runs">
+            <span class="run-tag run-cutback">Easy 2 mi</span>
+            <span class="run-tag run-cutback">Easy 2 mi</span>
+            <span class="run-tag run-cutback">Long 3.5 mi</span>
+          </div>
+          <div class="week-note">Keep everything very relaxed. Your body is adapting. Don't push.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 2 -->
+  <div class="phase">
+    <div class="phase-header">
+      <div class="phase-dot" style="background:var(--phase2);"></div>
+      <div class="phase-title" style="color:var(--phase2);">Phase 2 · Aerobic Development</div>
+      <div class="phase-weeks">Weeks 7–11</div>
+    </div>
+    <div class="phase-note">Introduce strides once per week on an easy run. Strides are 20-second accelerations to a fast but controlled effort — not a sprint — with full walking recovery between each. Everything else stays Zone 2.</div>
+    <div class="phase-wrapper">
+      <div class="week-row">
+        <div class="week-num">WK 07</div>
+        <div class="week-content">
+          <div class="week-total">8.5 miles total</div>
+          <div class="runs">
+            <span class="run-tag run-easy">Easy 2.5 mi</span>
+            <span class="run-tag run-stride">Easy 2.5 mi + 4×20s strides</span>
+            <span class="run-tag run-long">Long 3.5 mi</span>
+          </div>
+          <div class="week-note">Strides: accelerate smoothly for 20 sec, walk 60–90 sec, repeat 4 times. Do these at the end of your easy run.</div>
+        </div>
+      </div>
+      <div class="week-row">
+        <div class="week-num">WK 08</div>
+        <div class="week-content">
+          <div class="week-total">9 miles total</div>
+          <div class="runs">
+            <span class="run-tag run-easy">Easy 2.5 mi</span>
+            <span class="run-tag run-stride">Easy 2.5 mi + 4×20s strides</span>
+            <span class="run-tag run-long">Long 4 mi</span>
+          </div>
+        </div>
+      </div>
+      <div class="week-row">
+        <div class="week-num">WK 09</div>
+        <div class="week-content">
+          <div class="week-total">10 miles total</div>
+          <div class="runs">
+            <span class="run-tag run-easy">Easy 3 mi</span>
+            <span class="run-tag run-stride">Easy 3 mi + 6×20s strides</span>
+            <span class="run-tag run-long">Long 4 mi</span>
+          </div>
+          <div class="week-note">Bump strides to 6 reps this week.</div>
+        </div>
+      </div>
+      <div class="week-row">
+        <div class="week-num">WK 10</div>
+        <div class="week-content">
+          <div class="week-total">10.5 miles total</div>
+          <div class="runs">
+            <span class="run-tag run-easy">Easy 3 mi</span>
+            <span class="run-tag run-stride">Easy 3 mi + 6×20s strides</span>
+            <span class="run-tag run-long">Long 4.5 mi</span>
+          </div>
+        </div>
+      </div>
+      <div class="week-row">
+        <div class="week-num">WK 11</div>
+        <div class="week-content">
+          <div class="week-total">10 miles total · cutback week</div>
+          <div class="runs">
+            <span class="run-tag run-cutback">Easy 3 mi</span>
+            <span class="run-tag run-cutback">Easy 3 mi</span>
+            <span class="run-tag run-cutback">Long 4 mi</span>
+          </div>
+          <div class="week-note">Drop the strides this week. Rest and absorb the training from the last 5 weeks.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 3 -->
+  <div class="phase">
+    <div class="phase-header">
+      <div class="phase-dot" style="background:var(--phase3);"></div>
+      <div class="phase-title" style="color:var(--phase3);">Phase 3 · Pace Work</div>
+      <div class="phase-weeks">Weeks 12–15</div>
+    </div>
+    <div class="phase-note">Replace one easy run with a structured session each week. One long run stays easy (Zone 2). One easy run stays easy. Tempo = comfortably hard, Zone 3. Intervals = hard, Zone 4.</div>
+    <div class="phase-wrapper">
+      <div class="week-row">
+        <div class="week-num">WK 12</div>
+        <div class="week-content">
+          <div class="week-total">10 miles total</div>
+          <div class="runs">
+            <span class="run-tag run-easy">Easy 3 mi</span>
+            <span class="run-tag run-tempo">Tempo 3 mi (2 mi at tempo)</span>
+            <span class="run-tag run-long">Long 4 mi</span>
+          </div>
+          <div class="week-note">Tempo structure: 0.5 mi easy warmup → 2 mi at Zone 3 → 0.5 mi easy cooldown.</div>
+        </div>
+      </div>
+      <div class="week-row">
+        <div class="week-num">WK 13</div>
+        <div class="week-content">
+          <div class="week-total">11 miles total</div>
+          <div class="runs">
+            <span class="run-tag run-easy">Easy 3 mi</span>
+            <span class="run-tag run-tempo">Tempo 3.5 mi (2.5 mi at tempo)</span>
+            <span class="run-tag run-long">Long 4.5 mi</span>
+          </div>
+          <div class="week-note">Same structure as week 12. Extend the tempo segment by 0.5 mi.</div>
+        </div>
+      </div>
+      <div class="week-row">
+        <div class="week-num">WK 14</div>
+        <div class="week-content">
+          <div class="week-total">11.5 miles total</div>
+          <div class="runs">
+            <span class="run-tag run-easy">Easy 3 mi</span>
+            <span class="run-tag run-interval">Intervals: 6×1 min hard / 2 min easy</span>
+            <span class="run-tag run-long">Long 5 mi</span>
+          </div>
+          <div class="week-note">Interval structure: 1 mi warmup → 6 rounds of (1 min Zone 4 / 2 min Zone 1 walk-jog) → 1 mi cooldown. This is your first true interval session.</div>
+        </div>
+      </div>
+      <div class="week-row">
+        <div class="week-num">WK 15</div>
+        <div class="week-content">
+          <div class="week-total">12 miles total</div>
+          <div class="runs">
+            <span class="run-tag run-easy">Easy 2.5 mi</span>
+            <span class="run-tag run-interval">Intervals: 8×1 min hard / 90s easy</span>
+            <span class="run-tag run-long">Long 5 mi</span>
+          </div>
+          <div class="week-note">Same structure as week 14 but 8 reps with slightly shorter recovery (90 sec). Your body is ready for this.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 4 -->
+  <div class="phase">
+    <div class="phase-header">
+      <div class="phase-dot" style="background:var(--phase4);"></div>
+      <div class="phase-title" style="color:var(--phase4);">Phase 4 · Test Week</div>
+      <div class="phase-weeks">Week 16</div>
+    </div>
+    <div class="phase-note">Fresh legs. One easy shake-out run early in the week, then rest before your time trial. This is your first legitimate pace data point.</div>
+    <div class="phase-wrapper">
+      <div class="week-row">
+        <div class="week-num">WK 16</div>
+        <div class="week-content">
+          <div class="week-total">~4 miles total</div>
+          <div class="runs">
+            <span class="run-tag run-easy">Easy 2 mi (Mon/Tue)</span>
+            <span class="run-tag run-cutback">Rest 2 days</span>
+            <span class="run-tag run-trial">2-mile time trial</span>
+          </div>
+          <div class="week-note">Time trial: run 2 miles at your best honest sustained effort. Note your pace. This is your new baseline for whatever comes next.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Interval Guide -->
+  <div class="interval-guide">
+    <div class="label">How to run intervals (weeks 14–15)</div>
+    <div class="interval-steps">
+      <div class="interval-step">
+        <div class="step-label">Warmup</div>
+        <div class="step-desc">Run <span>1 mile easy (Zone 2)</span> before starting any hard effort. Do not skip this.</div>
+      </div>
+      <div class="interval-step">
+        <div class="step-label">Hard rep</div>
+        <div class="step-desc">Run for <span>1 minute at Zone 4</span> — hard but controlled. Not a sprint. You should feel like you could hold this for 3–4 minutes if you had to, but you're pushing.</div>
+      </div>
+      <div class="interval-step">
+        <div class="step-label">Recovery</div>
+        <div class="step-desc">Walk or slow jog for <span>2 min (week 14) or 90 sec (week 15)</span>. Full recovery before the next rep. Don't rush this.</div>
+      </div>
+      <div class="interval-step">
+        <div class="step-label">Repeat</div>
+        <div class="step-desc"><span>6 times (week 14)</span> or <span>8 times (week 15)</span>. If the last few reps feel impossible, you went out too hard on the first ones. Start conservative.</div>
+      </div>
+      <div class="interval-step">
+        <div class="step-label">Cooldown</div>
+        <div class="step-desc">Run <span>1 mile easy (Zone 2)</span> after your last rep. Never stop cold after hard running.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Effort Key -->
+  <div class="label" style="margin-bottom:10px;">Effort reference</div>
+  <div class="effort-key">
+    <div class="effort-card">
+      <div class="effort-name" style="color:var(--easy);">Easy / Zone 2</div>
+      <div class="effort-feel">Full sentences. Nose breathing possible.</div>
+      <div class="effort-hr">60–70% max HR</div>
+    </div>
+    <div class="effort-card">
+      <div class="effort-name" style="color:var(--stride);">Strides</div>
+      <div class="effort-feel">Fast but controlled. 20 sec only. Full walk recovery.</div>
+      <div class="effort-hr">Briefly Zone 4, don't fixate on HR</div>
+    </div>
+    <div class="effort-card">
+      <div class="effort-name" style="color:var(--tempo);">Tempo / Zone 3</div>
+      <div class="effort-feel">Comfortably hard. 2–3 words only. Could sustain 20–30 min.</div>
+      <div class="effort-hr">70–80% max HR</div>
+    </div>
+    <div class="effort-card">
+      <div class="effort-name" style="color:var(--interval);">Intervals / Zone 4</div>
+      <div class="effort-feel">Hard. No talking. Controlled, not a sprint.</div>
+      <div class="effort-hr">80–90% max HR</div>
+    </div>
+  </div>
+
+  <footer>
+    If something hurts (not just burns), stop and repeat the prior week. · Pace tracking is passive — observe, don't chase. · Max HR estimate: 220 minus your age, but test this with a perceived effort cross-check.
+  </footer>
+
+</div>
+</body>
+</html>
