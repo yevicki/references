@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PaceCircle Roadmap</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;1,9..144,300&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #F5F2EB;
+    --bg2: #EDE9DF;
+    --ink: #1A1814;
+    --ink2: #6B6558;
+    --ink3: #9B9388;
+    --accent: #C4501A;
+    --accent2: #E8845A;
+    --teal: #1A6B5A;
+    --teal2: #4DAA94;
+    --gold: #B8860B;
+    --gold2: #E8B84B;
+    --purple: #5A3A7A;
+    --purple2: #9B72CC;
+    --border: rgba(26,24,20,0.12);
+    --mono: 'DM Mono', monospace;
+    --serif: 'Fraunces', Georgia, serif;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--mono);
+    min-height: 100vh;
+    padding: 3rem 2rem 6rem;
+  }
+
+  .header {
+    max-width: 860px;
+    margin: 0 auto 4rem;
+  }
+
+  .header-eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.75rem;
+  }
+
+  .header h1 {
+    font-family: var(--serif);
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 300;
+    line-height: 1.1;
+    color: var(--ink);
+    margin-bottom: 0.5rem;
+  }
+
+  .header h1 em {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .header-sub {
+    font-size: 13px;
+    color: var(--ink2);
+    margin-top: 1rem;
+    line-height: 1.6;
+  }
+
+  .timeline {
+    max-width: 860px;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  .timeline-spine {
+    position: absolute;
+    left: 120px;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: linear-gradient(to bottom, transparent, var(--border) 5%, var(--border) 95%, transparent);
+  }
+
+  .phase {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 0;
+    margin-bottom: 3rem;
+    position: relative;
+  }
+
+  .phase-date {
+    padding-right: 2rem;
+    padding-top: 2px;
+    text-align: right;
+  }
+
+  .phase-date-label {
+    font-size: 11px;
+    color: var(--ink3);
+    letter-spacing: 0.05em;
+    display: block;
+    line-height: 1.4;
+  }
+
+  .phase-date-main {
+    font-family: var(--serif);
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ink2);
+    display: block;
+  }
+
+  .phase-dot {
+    position: absolute;
+    left: 113px;
+    top: 6px;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    border: 2px solid var(--bg);
+    z-index: 2;
+  }
+
+  .phase-content {
+    padding-left: 2rem;
+  }
+
+  .phase-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .phase-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    border-radius: 3px 0 0 3px;
+  }
+
+  .phase-accent-coral .phase-card::before { background: var(--accent); }
+  .phase-accent-teal .phase-card::before { background: var(--teal); }
+  .phase-accent-gold .phase-card::before { background: var(--gold); }
+  .phase-accent-purple .phase-card::before { background: var(--purple); }
+
+  .phase-accent-coral .phase-dot { background: var(--accent); }
+  .phase-accent-teal .phase-dot { background: var(--teal); }
+  .phase-accent-gold .phase-dot { background: var(--gold); }
+  .phase-accent-purple .phase-dot { background: var(--purple); }
+
+  .phase-tag {
+    display: inline-block;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 20px;
+    margin-bottom: 0.6rem;
+    font-weight: 500;
+  }
+
+  .phase-accent-coral .phase-tag { background: #FDF0EB; color: var(--accent); }
+  .phase-accent-teal .phase-tag { background: #EBF5F2; color: var(--teal); }
+  .phase-accent-gold .phase-tag { background: #FDF8EB; color: var(--gold); }
+  .phase-accent-purple .phase-tag { background: #F2EBF8; color: var(--purple); }
+
+  .phase-card h2 {
+    font-family: var(--serif);
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 0.35rem;
+    line-height: 1.3;
+  }
+
+  .phase-card .phase-desc {
+    font-size: 12px;
+    color: var(--ink2);
+    margin-bottom: 1rem;
+    line-height: 1.6;
+  }
+
+  .tasks {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .task-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--ink);
+    line-height: 1.5;
+    padding: 6px 8px;
+    border-radius: 6px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: opacity 0.2s;
+    user-select: none;
+  }
+
+  .task-item.done {
+    opacity: 0.45;
+  }
+
+  .task-item.done .task-text {
+    text-decoration: line-through;
+  }
+
+  .task-check {
+    width: 14px;
+    height: 14px;
+    border: 1.5px solid currentColor;
+    border-radius: 3px;
+    flex-shrink: 0;
+    margin-top: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    transition: all 0.15s;
+  }
+
+  .task-item.done .task-check {
+    background: var(--teal);
+    border-color: var(--teal);
+    color: white;
+  }
+
+  .phase-accent-coral .task-item.done .task-check { background: var(--accent); border-color: var(--accent); }
+  .phase-accent-gold .task-item.done .task-check { background: var(--gold); border-color: var(--gold); }
+  .phase-accent-purple .task-item.done .task-check { background: var(--purple); border-color: var(--purple); }
+
+  .task-note {
+    font-size: 11px;
+    color: var(--ink3);
+    margin-top: 2px;
+  }
+
+  .cofounders-section {
+    max-width: 860px;
+    margin: 1rem auto 0;
+    padding-left: 120px;
+  }
+
+  .cofounders-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-left: 2rem;
+  }
+
+  .cofounders-card h2 {
+    font-family: var(--serif);
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 0.35rem;
+  }
+
+  .cofounders-card .section-desc {
+    font-size: 12px;
+    color: var(--ink2);
+    margin-bottom: 1.25rem;
+    line-height: 1.6;
+  }
+
+  .cofounder-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .cofounder-card {
+    border-radius: 8px;
+    padding: 0.875rem 1rem;
+    border: 1px solid var(--border);
+  }
+
+  .cofounder-need {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 0.3rem;
+  }
+
+  .cofounder-desc {
+    font-size: 12px;
+    color: var(--ink2);
+    line-height: 1.55;
+    margin-bottom: 0.5rem;
+  }
+
+  .cofounder-verdict {
+    font-size: 11px;
+    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: 20px;
+    display: inline-block;
+  }
+
+  .verdict-now { background: #FDF0EB; color: var(--accent); }
+  .verdict-later { background: #EBF5F2; color: var(--teal); }
+  .verdict-skip { background: #F5F5F5; color: var(--ink3); }
+
+  .progress-bar-wrap {
+    max-width: 860px;
+    margin: 0 auto 2.5rem;
+    padding-left: 120px;
+  }
+
+  .progress-bar-inner {
+    margin-left: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .pb-track {
+    flex: 1;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .pb-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 2px;
+    transition: width 0.4s ease;
+  }
+
+  .pb-label {
+    font-size: 11px;
+    color: var(--ink3);
+    white-space: nowrap;
+  }
+
+  @media (max-width: 600px) {
+    .timeline-spine { left: 80px; }
+    .phase { grid-template-columns: 80px 1fr; }
+    .phase-dot { left: 73px; }
+    .phase-date-main { font-size: 12px; }
+    .cofounders-section { padding-left: 80px; }
+    .progress-bar-wrap { padding-left: 80px; }
+    .cofounder-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <p class="header-eyebrow">PaceCircle — Founder Roadmap</p>
+  <h1>Build, launch,<br><em>fund.</em></h1>
+  <p class="header-sub">A sequenced plan from right now through your NC IDEA Grant application in July 2026.<br>Click any task to check it off.</p>
+</div>
+
+<div class="progress-bar-wrap">
+  <div class="progress-bar-inner">
+    <div class="pb-track"><div class="pb-fill" id="pb-fill" style="width:0%"></div></div>
+    <span class="pb-label" id="pb-label">0 / 0 complete</span>
+  </div>
+</div>
+
+<div class="timeline">
+  <div class="timeline-spine"></div>
+
+  <div class="phase phase-accent-coral" id="phase-0">
+    <div class="phase-date">
+      <span class="phase-date-label">now —</span>
+      <span class="phase-date-main">Aug '25</span>
+    </div>
+    <div class="phase-dot"></div>
+    <div class="phase-content">
+      <div class="phase-card">
+        <span class="phase-tag">Free credits + foundations</span>
+        <h2>Get AWS & Google credits, start building</h2>
+        <p class="phase-desc">Zero cost, zero equity. Apply for cloud credits before you spend a dollar on infrastructure. Build the MVP in parallel.</p>
+        <div class="tasks" data-phase="0">
+          <div class="task-item" data-key="0-0">
+            <div class="task-check"></div>
+            <div><div class="task-text">Apply for AWS Activate (up to $100k credits)</div><div class="task-note">activate.aws.com — Founders tier, no LLC needed</div></div>
+          </div>
+          <div class="task-item" data-key="0-1">
+            <div class="task-check"></div>
+            <div><div class="task-text">Apply for Google for Startups</div><div class="task-note">startup.google.com — cloud credits + mentorship, no entity required</div></div>
+          </div>
+          <div class="task-item" data-key="0-2">
+            <div class="task-check"></div>
+            <div><div class="task-text">Build UserTrainingProfile entity + manual input form</div><div class="task-note">Skip watch sync for now — manual data gets you a working AI coach faster</div></div>
+          </div>
+          <div class="task-item" data-key="0-3">
+            <div class="task-check"></div>
+            <div><div class="task-text">Build CoachingService with prompt builder</div><div class="task-note">Sanitized input, delimited system prompt, Anthropic API call</div></div>
+          </div>
+          <div class="task-item" data-key="0-4">
+            <div class="task-check"></div>
+            <div><div class="task-text">Add rate limiting to coaching endpoint</div><div class="task-note">20 messages/user/day — protect API budget before any users touch it</div></div>
+          </div>
+          <div class="task-item" data-key="0-5">
+            <div class="task-check"></div>
+            <div><div class="task-text">Add in-app AI disclaimer to every coaching response</div><div class="task-note">"This is AI-generated guidance, not medical advice." — visible, not buried</div></div>
+          </div>
+          <div class="task-item" data-key="0-6">
+            <div class="task-check"></div>
+            <div><div class="task-text">Deploy to a public URL</div><div class="task-note">Railway or Render — get a live link so grant reviewers can see something real</div></div>
+          </div>
+          <div class="task-item" data-key="0-7">
+            <div class="task-check"></div>
+            <div><div class="task-text">Add Strava OAuth integration</div><div class="task-note">Pull last 10 weeks of workout history — replaces manual entry with real load data</div></div>
+          </div>
+          <div class="task-item" data-key="0-8">
+            <div class="task-check"></div>
+            <div><div class="task-text">Build acute:chronic workload ratio computation</div><div class="task-note">Background job that recalculates after each synced activity</div></div>
+          </div>
+          <div class="task-item" data-key="0-9">
+            <div class="task-check"></div>
+            <div><div class="task-text">Add basic analytics (active users, messages sent, retention)</div><div class="task-note">You'll need these numbers for grant applications</div></div>
+          </div>
+          <div class="task-item" data-key="0-10">
+            <div class="task-check"></div>
+            <div><div class="task-text">Soft launch to friends in your running community</div><div class="task-note">Target 10–20 real users — qualitative feedback is grant gold</div></div>
+          </div>
+          <div class="task-item" data-key="0-11">
+            <div class="task-check"></div>
+            <div><div class="task-text">Generate a ToS with Termly or similar</div><div class="task-note">Free template is fine for early testers — gets assumption-of-risk language in place</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="phase phase-accent-teal" id="phase-1">
+    <div class="phase-date">
+      <span class="phase-date-label">target</span>
+      <span class="phase-date-main">Apr '26</span>
+    </div>
+    <div class="phase-dot"></div>
+    <div class="phase-content">
+      <div class="phase-card">
+        <span class="phase-tag">Legal + monetization</span>
+        <h2>Form LLC, launch paid tier, get legal review</h2>
+        <p class="phase-desc">Smart timing — file in April so your first annual report isn't due until April 2027. Add a paid tier before the grant application.</p>
+        <div class="tasks" data-phase="1">
+          <div class="task-item" data-key="1-0">
+            <div class="task-check"></div>
+            <div><div class="task-text">File NC LLC Articles of Organization</div><div class="task-note">sosnc.gov — $125 filing fee, processes in a few days</div></div>
+          </div>
+          <div class="task-item" data-key="1-1">
+            <div class="task-check"></div>
+            <div><div class="task-text">Get your EIN from the IRS</div><div class="task-note">irs.gov — free, instant. Needed for your business bank account</div></div>
+          </div>
+          <div class="task-item" data-key="1-2">
+            <div class="task-check"></div>
+            <div><div class="task-text">Open a business bank account</div><div class="task-note">Mercury is free and startup-friendly — keep business and personal finances strictly separate</div></div>
+          </div>
+          <div class="task-item" data-key="1-3">
+            <div class="task-check"></div>
+            <div><div class="task-text">Create an Operating Agreement</div><div class="task-note">Single-member template is fine — states you own 100% and sets decision rules</div></div>
+          </div>
+          <div class="task-item" data-key="1-4">
+            <div class="task-check"></div>
+            <div><div class="task-text">Get ToS reviewed by an attorney</div><div class="task-note">~$200–400 for a review — worth it before wide launch given the AI health-adjacent angle</div></div>
+          </div>
+          <div class="task-item" data-key="1-5">
+            <div class="task-check"></div>
+            <div><div class="task-text">Launch paid subscription tier ($8–10/month)</div><div class="task-note">Even 5 paying users is meaningful traction for the grant application</div></div>
+          </div>
+          <div class="task-item" data-key="1-6">
+            <div class="task-check"></div>
+            <div><div class="task-text">Set calendar reminder for NC annual report (April 2027)</div><div class="task-note">$202/year — easy to forget, painful to miss</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="phase phase-accent-gold" id="phase-2">
+    <div class="phase-date">
+      <span class="phase-date-label">target</span>
+      <span class="phase-date-main">Jun '26</span>
+    </div>
+    <div class="phase-dot"></div>
+    <div class="phase-content">
+      <div class="phase-card">
+        <span class="phase-tag">Grant prep</span>
+        <h2>Write your narrative, engage UNC network</h2>
+        <p class="phase-desc">NC IDEA opens in July. Spend June getting your materials tight so you're not writing under pressure.</p>
+        <div class="tasks" data-phase="2">
+          <div class="task-item" data-key="2-0">
+            <div class="task-check"></div>
+            <div><div class="task-text">Write your one-paragraph problem statement</div><div class="task-note">"Recreational runners are injured at high rates because apps can't model individual load tolerance..." — reuse this everywhere</div></div>
+          </div>
+          <div class="task-item" data-key="2-1">
+            <div class="task-check"></div>
+            <div><div class="task-text">Document your market size</div><div class="task-note">Runna has 2M+ users at $120/yr — shows there's a proven, paying market</div></div>
+          </div>
+          <div class="task-item" data-key="2-2">
+            <div class="task-check"></div>
+            <div><div class="task-text">Pull your traction numbers</div><div class="task-note">Active users, messages sent, retention rate, revenue — concrete beats vague</div></div>
+          </div>
+          <div class="task-item" data-key="2-3">
+            <div class="task-check"></div>
+            <div><div class="task-text">Email Innovate Carolina intro</div><div class="task-note">innovate.unc.edu — mention UNC alum, health tech, injury prevention angle</div></div>
+          </div>
+          <div class="task-item" data-key="2-4">
+            <div class="task-check"></div>
+            <div><div class="task-text">Document the acute:chronic ratio model technically</div><div class="task-note">Reviewers want to see the approach written up — also useful for future SBIR</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="phase phase-accent-purple" id="phase-3">
+    <div class="phase-date">
+      <span class="phase-date-label">target</span>
+      <span class="phase-date-main">Jul '26</span>
+    </div>
+    <div class="phase-dot"></div>
+    <div class="phase-content">
+      <div class="phase-card">
+        <span class="phase-tag">NC IDEA Grant</span>
+        <h2>Submit NC IDEA application — $50k non-dilutive</h2>
+        <p class="phase-desc">By this point you'll have a live product, real users, revenue, and a registered LLC. That's a strong application.</p>
+        <div class="tasks" data-phase="3">
+          <div class="task-item" data-key="3-0">
+            <div class="task-check"></div>
+            <div><div class="task-text">Check ncidea.org for July cycle open date</div><div class="task-note">They run two cycles per year — confirm exact dates when they announce</div></div>
+          </div>
+          <div class="task-item" data-key="3-1">
+            <div class="task-check"></div>
+            <div><div class="task-text">Submit NC IDEA Grant application</div><div class="task-note">Problem statement, market size, traction, team — all already written by now</div></div>
+          </div>
+          <div class="task-item" data-key="3-2">
+            <div class="task-check"></div>
+            <div><div class="task-text">Begin SBIR Phase I narrative draft</div><div class="task-note">NIH or NSF depending on framing — start now, submit 3–6 months later</div></div>
+          </div>
+          <div class="task-item" data-key="3-3">
+            <div class="task-check"></div>
+            <div><div class="task-text">Contact a UNC researcher about STTR collaboration</div><div class="task-note">Faculty co-applicant opens STTR eligibility and strengthens the SBIR proposal significantly</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="cofounders-section">
+  <div class="cofounders-card">
+    <h2 style="font-family: 'Fraunces', serif; font-size: 20px; font-weight: 600; margin-bottom: 0.35rem;">Should you bring on co-founders?</h2>
+    <p class="section-desc">Honest take: you can build the MVP solo. Co-founders dilute equity — only bring someone in if they fill a gap you genuinely can't cover and they're committed full-time.</p>
+    <div class="cofounder-grid">
+      <div class="cofounder-card" style="background: #FDF0EB; border-color: rgba(196,80,26,0.2);">
+        <div class="cofounder-need" style="color: var(--accent);">Marketing / growth</div>
+        <p class="cofounder-desc">You can build the product. Getting runners to find it and trust it is a different skill set. Someone with a fitness content audience or community ties is high-value.</p>
+        <span class="cofounder-verdict verdict-now">Worth considering early</span>
+      </div>
+      <div class="cofounder-card" style="background: #FDF8EB; border-color: rgba(184,134,11,0.2);">
+        <div class="cofounder-need" style="color: var(--gold);">Coaching expertise</div>
+        <p class="cofounder-desc">A certified running coach as an advisor (not necessarily co-founder) adds credibility to grant applications and helps encode real coaching logic into your prompts.</p>
+        <span class="cofounder-verdict verdict-now">Advisor first, not co-founder</span>
+      </div>
+      <div class="cofounder-card" style="background: #EBF5F2; border-color: rgba(26,107,90,0.2);">
+        <div class="cofounder-need" style="color: var(--teal);">Second engineer</div>
+        <p class="cofounder-desc">You don't need one yet. Once you have revenue and the product is growing faster than you can ship, hire rather than give equity — keeps the cap table clean for grants.</p>
+        <span class="cofounder-verdict verdict-later">Hire later, not co-founder</span>
+      </div>
+      <div class="cofounder-card" style="background: var(--bg2); border-color: var(--border);">
+        <div class="cofounder-need" style="color: var(--ink2);">Business / finance</div>
+        <p class="cofounder-desc">Your BofA background covers this well. You already understand unit economics, funding structures, and monetization better than most technical founders.</p>
+        <span class="cofounder-verdict verdict-skip">You've got this covered</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let state = {};
+  try { state = JSON.parse(localStorage.getItem('pc_timeline') || '{}'); } catch(e) {}
+
+  function save() { try { localStorage.setItem('pc_timeline', JSON.stringify(state)); } catch(e) {} }
+
+  function updateProgress() {
+    const all = document.querySelectorAll('.task-item');
+    const done = document.querySelectorAll('.task-item.done');
+    const pct = all.length ? Math.round(done.length / all.length * 100) : 0;
+    document.getElementById('pb-fill').style.width = pct + '%';
+    document.getElementById('pb-label').textContent = `${done.length} / ${all.length} complete`;
+  }
+
+  document.querySelectorAll('.task-item').forEach(el => {
+    const key = el.dataset.key;
+    if (state[key]) el.classList.add('done');
+
+    el.querySelector('.task-check').textContent = state[key] ? '✓' : '';
+
+    el.addEventListener('click', () => {
+      state[key] = !state[key];
+      el.classList.toggle('done', state[key]);
+      el.querySelector('.task-check').textContent = state[key] ? '✓' : '';
+      save();
+      updateProgress();
+    });
+  });
+
+  updateProgress();
+</script>
+</body>
+</html>
